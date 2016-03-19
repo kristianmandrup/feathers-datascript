@@ -1,6 +1,10 @@
 # feathers-datascript
 A [datascript](https://www.npmjs.com/package/datascript) and  [datomic](http://docs.datomic.com/architecture.html) service for FeathersJS.
 
+See [clj-crud](https://github.com/thegeez/clj-crud) for more inspiration.
+
+Article on CRUD [here](http://thegeez.net/2014/04/30/datascript_clojure_web_app.html) and [here](http://thegeez.net/2014/05/01/datascript_quiescent_standalone.html)
+
 ## WIP: Under development
 To help with development, you can run the tests with `npm run test`.
 
