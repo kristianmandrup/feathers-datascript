@@ -163,7 +163,11 @@ function buildQuery(params) {
   // WIP: this is mainly a sketch of idea/algorithm
   // UNTESTED... Needs more love/work!
 
-  params.$equals = filter(params, '!$*')
+  // we can simply test on any value being an object, not a literal
+  params.$equals = filter(params, (value) => {
+    // keep only those keys that don't have an object value
+    return (typeof value !== 'object');
+  })
 
   let selectSet = {
     invalid: filterSelect(params.$select, -1),
@@ -215,8 +219,12 @@ function buildQuery(params) {
 
   // More TODO...
 
+  query = [[':find', clauses.find]
+   // ['$in']
+   [':where', clauses.where]];
+
   // TODO: return query we have built
-  return params;
+  return query;
 }
 
 function predicateExprs(predicates, predicateFuns) {
@@ -229,8 +237,8 @@ function predicateExprs(predicates, predicateFuns) {
 }
 
 function predicateBuilder(predicate) {
-  return function predicateExpr(attribute, value) {
-    return `[(${predicate} ?${attribute} ${value})]]`;
+  return function predicateExpr(k, v) {
+    return `[(${predicate} ?${k} ${v})]]`;
   }
 }
 
@@ -249,8 +257,33 @@ function buildWhereEqs(list) {
 }
 
 function createWhereClause(k, v) {
-  return `[?eid ${attribute} ${value}]`;
+  return `[?eid ?${attribute} ${value}]`;
 }
+
+function buildOr(obj) {
+  return obj.map(not => {
+    var clauses = [];
+    for (let [k,v] of entries(obj)) {
+      clauses.push(createOrClause(k, v));
+    }
+    return clauses;
+  })
+}
+
+// '(or [['?eid', ':todo/name', "john"]
+//     ['?eid', ':todo/age', 32]])'
+
+function createOrClauses(obj) {
+  let internalClauses = obj.map(not => {
+    var clauses = [];
+    for (let [k,v] of entries(obj)) {
+      clauses.push(createWhereClause(k, v));
+    }
+    return clauses;
+  })
+  return `(or ${internalClauses})`
+}
+
 
 function buildNots(obj) {
   obj.map(not => {
@@ -262,6 +295,6 @@ function buildNots(obj) {
   })
 }
 
-function createNotClause(attribute, value) {
-  return `(not [?eid ${attribute} ${value}])`
+function createNotClause(k, v) {
+  return `(not ${whereClause(k, v)})`
 }
