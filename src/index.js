@@ -1,5 +1,6 @@
 import Proto from 'uberproto';
 import filter from 'feathers-query-filters';
+import Query from './Query';
 import { datascript as d } from 'datascript';
 import { types as errors } from 'feathers-errors';
 import _ from 'lodash';
@@ -32,43 +33,13 @@ export const Service = Proto.extend({
 
     // TODO: handle failed connections.
     this.ready = new Promise(function(resolve){
-        var db = d.empty_db(options.schema);
+        var db = d.empty_db(options.schema, options.data || []);
         resolve(db);
       });
     });
   },
 
-  /*
-    Pagination:
-      $limit: max # or records to return 
-        {$limit: 10}
-      $skip: how many records to skip before starting query 
-        {$skip: 100}
 
-    Sorting:
-      $sort: {name: 1} // name:ascending
-      $sort: {age: -1} // age:descending
-
-    Select:
-      $select: {'name':1} // only name
-      $select: {'password':0} // all except password
-
-    Where
-      ==
-      {name: 'Alice'} // all where name == 'Alice'
-
-      $in, $nin: Contains (or not) given value in list
-        {name: {$in: ['Alice', 'Bob']}}
-      $lt, $lte: less than <, <=
-        {age: {$lte: 65 }}
-
-      $gt, $gte: less than >, >=
-        {age: {$gte: 21 }}
-
-      $ne: Not equal: {age: {$ne: 25 }}
-      $or: or (either)
-        {$or: [{name: 'Alice'}, {name: 'Bob'}]}
-  */
   find: function(params, callback) {
     var self = this;
 
@@ -86,11 +57,8 @@ export const Service = Proto.extend({
     var args = arguments;
 
     self.ready.then(function(connection){
-      var query = `[:find ?e
-                    :in  $ ?e
-                    :where [?e ':entity/name' ${self.name} ?n]
-
-                    ]`
+      params.$id = id;
+      var query = new Query(params).build();
 
       // what do params do here?
       var result = d.q(query, connection)
@@ -155,146 +123,3 @@ function* entries(obj) {
 }
 
 
-function buildQuery(params) {
-  let query = [];
-  let wheres = {};
-  let clauses = {};
-
-  // WIP: this is mainly a sketch of idea/algorithm
-  // UNTESTED... Needs more love/work!
-
-  // we can simply test on any value being an object, not a literal
-  params.$equals = filter(params, (value) => {
-    // keep only those keys that don't have an object value
-    return (typeof value !== 'object');
-  })
-
-  let selectSet = {
-    invalid: filterSelect(params.$select, -1),
-    valid: filterSelect(params.$select, 1),
-  };
-  var selects = Object.keys(params.$equals);
-
-  // for select/where, ideally we would use $in to pass values as arguments,
-  // however this may be too complicated for now. 
-  // Primitive string building of hard coded test values in :where 
-  // looks (MUCH) easier for a first POC (prototype!)
-
-  wheres.eq = buildWhereEqs(params.$equals);
-
-  // $ne: Not equal: {age: {$ne: 25 }}
-  where.not = buildNots(params.$ne)
-
-  // $in, $nin: Contains (or not) given value in list
-  //   {name: {$in: ['Alice', 'Bob']}}
-
-  // Translations:
-  // $or and $in are equivalent
-  // $nin is simply an $or nested with a list of $ne inside (I think?)
-
-  // $lt, $lte: less than <, <=
-  //   {age: {$lte: 65 }}
-
-  // $gt, $gte: less than >, >=
-  //   {age: {$gte: 21 }}
-
-
-  let predicates = {
-    '<': '$lt',
-    '<=': '$lte',
-    '>': '$gt',
-    '>=': '$gte'
-  };
-  let predKeys = Object.keys(predicates);
-  let predicateFuns = Object.keys(predicates).reduce((prev, next) =>{
-    return Object.assign(prev, {[next]: predicateBuilder(next)};)
-  }, {});
-
-  let wherePreds = predicateExprs(predicates, predicateFuns);
-
-  Object.assign(where, wherePreds);
-
-  // collect all the where object values into one list of where clauses
-  let clauses.where = [].concat(Object.values(where));
-
-  // More TODO...
-
-  query = [[':find', clauses.find]
-   // ['$in']
-   [':where', clauses.where]];
-
-  // TODO: return query we have built
-  return query;
-}
-
-function predicateExprs(predicates, predicateFuns) {
-  var whereClauses = [];
-  for (let [k, v] of entries(predicates)) {
-    let predFun = predicateFuns[k];
-    whereClauses.push(predFun(k, v));
-  }
-  return whereClauses;
-}
-
-function predicateBuilder(predicate) {
-  return function predicateExpr(k, v) {
-    return `[(${predicate} ?${k} ${v})]]`;
-  }
-}
-
-function filterSelect(obj, criteria) {
-  return Object.keys(filter(obj, criteria));
-}
-
-// TODO: use a class for each type of clause!?
-
-function buildWhereEqs(list) {
-  var whereClauses = [];
-  for (let [k,v] of entries(obj)) {
-    whereClauses.push(createWhereClause(k, v));
-  }
-  return whereClauses;
-}
-
-function createWhereClause(k, v) {
-  return `[?eid ?${attribute} ${value}]`;
-}
-
-function buildOr(obj) {
-  return obj.map(not => {
-    var clauses = [];
-    for (let [k,v] of entries(obj)) {
-      clauses.push(createOrClause(k, v));
-    }
-    return clauses;
-  })
-}
-
-// '(or [['?eid', ':todo/name', "john"]
-//     ['?eid', ':todo/age', 32]])'
-
-function createOrClauses(obj) {
-  let internalClauses = obj.map(not => {
-    var clauses = [];
-    for (let [k,v] of entries(obj)) {
-      clauses.push(createWhereClause(k, v));
-    }
-    return clauses;
-  })
-  return `(or ${internalClauses})`
-}
-
-
-function buildNots(obj) {
-  obj.map(not => {
-    var clauses = [];
-    for (let [k,v] of entries(obj)) {
-      clauses.push(createNotClause(k, v));
-    }
-    return clauses;
-  })
-}
-
-function createNotClause(k, v) {
-  return `(not ${whereClause(k, v)})`
-}

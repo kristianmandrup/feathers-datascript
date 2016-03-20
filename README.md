@@ -1,5 +1,5 @@
 # feathers-datascript
-A [datascript](https://www.npmjs.com/package/datascript) and  [datomic](http://docs.datomic.com/architecture.html) service for FeathersJS.
+A [datascript](https://www.npmjs.com/package/datascript) and [datomic](http://docs.datomic.com/architecture.html) service for FeathersJS.
 
 See [clj-crud](https://github.com/thegeez/clj-crud) for more inspiration.
 
@@ -8,12 +8,17 @@ Article on CRUD [here](http://thegeez.net/2014/04/30/datascript_clojure_web_app.
 ## WIP: Under development
 To help with development, you can run the tests with `npm run test`.
 
+The *tricky part* is to build a full [Datalog query](http://docs.datomic.com/query.html) from the standard FeathersJS query syntax. This is all (attempted to be) achieved in the `/query` folder. Work will continue there... :)
+
 ## Create DB
 
 ```js
 import {datascript as d} from 'datascript'
 
-var db = d.db_with(d.empty_db(schema), [data])
+var db = d.empty_db(options.schema)
+
+// or with schema AND initial data
+var db = d.empty_db(schema, [data])
 ```
                          [
 
