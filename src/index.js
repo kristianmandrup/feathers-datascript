@@ -110,13 +110,5 @@ export default function() {
   return Proto.create.apply(Service, arguments);
 }
 
-import filter from 'filter-object';
-
-// http://www.2ality.com/2015/11/stage3-object-entries.html
-function* entries(obj) {
-   for (let key of Object.keys(obj)) {
-     yield [key, obj[key]];
-   }
-}
 
 
