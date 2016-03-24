@@ -7,7 +7,7 @@ See [datascript-tutorial](https://github.com/kristianmandrup/datascript-tutorial
 
 ## Datomic JS driver
 
-We can use Datomic from JS via [datomicjs](https://github.com/limadelic/datomicjs) module.
+Also use Datomic from JS via [datomicjs](https://github.com/kristianmandrup/datomicjs) module.
 
 ## CRUD blog posts
 - [datascript/clojure](http://thegeez.net/2014/04/30/datascript_clojure_web_app.html)
@@ -22,19 +22,18 @@ The *tricky part* is to build a full [Datalog query](http://docs.datomic.com/que
 Datascript/Datomic Schema example:
 
 ```js
-  [
-  // primary key: :person/id, int, unique, indexed
-  {
+  [{
+    // primary key: :person/id, int, unique, indexed
     'db/id': ':person/external-id',
     ':db/ident': ':person/id',
     ':db/valueType': ':db.type/bigint',
-    ':db/unique': ':db.unique/identity'
+    ':db/unique': ':db.unique/identity',
     ':db/index': true
   },
   // firstname, string[1]
   {
-    ':db/ident': ':person/firstName'
-    ':db/cardinality': ':db.cardinality/one'
+    ':db/ident': ':person/firstName',
+    ':db/cardinality': ':db.cardinality/one',
     ':db/valueType': ':db.type/string'
   }
   // lastName, string[1]  
@@ -42,9 +41,14 @@ Datascript/Datomic Schema example:
     ':db/ident': ':person/lastName',
     ':db/cardinality': ':db.cardinality/one',
     ':db/valueType': ':db.type/string'
+  },
+  {
+    ':db/add': -1,
+    ':person/id': 123,
+    ':person/firstName': 'John',
+    ':person/lastName': 'Doe'
   }]
 
-  {':db/add': -1, ':person/id' 123, ':person/firstName': 'John', ':person/lastName': 'Doe'}
 ```
 
 ## Create DB
