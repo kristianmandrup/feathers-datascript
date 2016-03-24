@@ -74,17 +74,11 @@ export default class Pull {
 
   get builders() {
     return {
-      find: Find
-      in: In
-      where: Where
     };
   }
 
   build() {
     return [
-      this.find(),
-      this.in(),
-      this.where()
     ];
   }
 }

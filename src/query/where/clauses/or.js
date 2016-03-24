@@ -3,7 +3,7 @@ import Builder from '../builder';
 
 export default class Or extends BaseClause {
   constructor(obj) {
-    this.list = obj['$or'];
+    this.list = obj.$or;
   }
 
   // $or: or (either)
@@ -20,7 +20,7 @@ export default class Or extends BaseClause {
     this.list.reduce((prev, next) => {
       prev.push(this.clause(next));
       return prev;
-    }, [])
+    }, []);
   }
 
 

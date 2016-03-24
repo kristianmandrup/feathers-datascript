@@ -14,6 +14,18 @@ Also use Datomic from JS via [datomicjs](https://github.com/kristianmandrup/dato
 - [datascript/quiescent](http://thegeez.net/2014/05/01/datascript_quiescent_standalone.html)
 - [clj-crud app](https://github.com/thegeez/clj-crud)
 
+## Install/use
+
+Fork [datomicjs](https://github.com/kristianmandrup/datomicjs) and from your local repo, use `npm link` so that feathersjs-datascript references your local copy (for development).
+
+Then install modules
+
+`$ npm install`
+
+## Contribute/Run test
+
+`$ npm test`
+
 ## WIP: Under development
 To help with development, you can run the tests with `npm run test`.
 

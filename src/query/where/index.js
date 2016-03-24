@@ -6,7 +6,7 @@ export default class Where {
   }
 
   build() {
-    return params.map(param => {
+    return this.params.map(param => {
       return new Builder(param).build();
     });
   }

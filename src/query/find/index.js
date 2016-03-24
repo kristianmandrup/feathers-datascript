@@ -40,10 +40,10 @@ export default class Find {
   }
 
   // NOT supported yet
-  except() {}
-    this.attrs = this.set.except;
-    return {};
-  }
+  // except() {}
+  //   this.attrs = this.set.except;
+  //   return {};
+  // }
 
   only() {
     return new Only(this.selector.set.only).build();

@@ -8,6 +8,6 @@ export default class Eq extends BaseClause {
   }
 
   build() {
-    return `[?eid ?${name} ${value}]`;
+    return `[?eid ?${this.name} ${this.value}]`;
   }
 }

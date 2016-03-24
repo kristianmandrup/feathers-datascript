@@ -18,7 +18,7 @@ import Builder from '../builder';
 export default class Predicate extends BaseClause {
   constructor(name, predicate) {
     super(name);
-    this.value = predicate['$ne'];
+    this.value = predicate.$ne;
     this.predicate = predicate;
     this.outputPredicate = this.predicateMap[predicate];
   }

@@ -1,7 +1,9 @@
+import filter from 'filter-object';
+
 function buildSelector($select) {
   return (criteria) => {
     return Object.keys(filter($select, criteria));
-  }
+  };
 }
 
 export default class Selector {
@@ -11,8 +13,8 @@ export default class Selector {
 
   get set() {
     return {
-      all: this.select((val) => val === '*')),
-      only: this.select(1)),
+      all: this.select(val => val === '*'),
+      only: this.select(1),
 
       // NOT supported yet
       except: this.select(-1)
@@ -28,8 +30,9 @@ export default class Selector {
   }
 
   get type() {
-    for (key of Object.keys(this.set))
-      if (this.has(key)) return key;
+    for (let key of Object.keys(this.set)) {
+      if (this.has(key)) { return key; }
+    }
     return 'all';
   }
 }

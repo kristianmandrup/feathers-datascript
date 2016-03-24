@@ -1,4 +1,4 @@
-import { Eq, Or, Predicate } from './clauses';
+import { Id, Eq, Or, Predicate } from './clauses';
 import { predicateMap } from './clauses/predicate';
 
 export default class Builder {
@@ -13,28 +13,31 @@ export default class Builder {
   }
 
   get clause() {
-    id: Id,
-    eq: Eq,
-    or: Or,
-    predicate: Predicate
+    return {
+      id: Id,
+      eq: Eq,
+      or: Or,
+      predicate: Predicate
+    };
   }
 
   build() {
-    return new this.type(name, predicate);
+    return new this.type(this.name, this.predicate);
   }
 
   get type() {
-    if (typeof this.predicate !== 'object')
-      return this.clause['eq'];
-
-    if (this.predicate === '$id')
-      return this.clause['id'];
-
-    if (this.predicate === '$or')
-      return this.clause['or'];
-
-    if (predicateMap[this.predicate])
-      return this.clause['predicate'];
+    if (typeof this.predicate !== 'object') {
+      return this.clause.eq;
+    }
+    if (this.predicate === '$id') {
+      return this.clause.id;
+    }
+    if (this.predicate === '$or') {
+      return this.clause.or;
+    }
+    if (predicateMap[this.predicate]) {
+      return this.clause.predicate;
+    }
     return null;
   }
 }

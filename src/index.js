@@ -1,17 +1,19 @@
 import Proto from 'uberproto';
-import filter from 'feathers-query-filters';
+// import filter from 'feathers-query-filters';
 import Query from './Query';
 import { datascript as d } from 'datascript';
-import { types as errors } from 'feathers-errors';
+// import { types as errors } from 'feathers-errors';
 import _ from 'lodash';
+
+function buildQuery(q) {
+  return new Query(q).build();
+}
 
 // Create the service.
 export const Service = Proto.extend({
   init: function(name, options = {}){
-    var self = this;
-
     if(!name){
-      throw new SyntaxError('You must pass a String as the name of the entity')
+      throw new SyntaxError('You must pass a String as the name of the entity');
     }
 
     var defaults = {
@@ -26,10 +28,10 @@ export const Service = Proto.extend({
 
     // TODO: To be used if DB is exposed as endpoint on a server
     // (ie. such as Express on Node.js)
-    var connectionOptions = {
-      host: options.host,
-      port: options.port
-    };
+    // var connectionOptions = {
+    //   host: options.host,
+    //   port: options.port
+    // };
 
     // TODO: handle failed connections.
     this.ready = new Promise(function(resolve){
@@ -53,7 +55,6 @@ export const Service = Proto.extend({
 
   get(id, params, callback) {
     var self = this;
-    var args = arguments;
 
     self.ready.then(function(connection){
       params.$id = id;
@@ -67,7 +68,6 @@ export const Service = Proto.extend({
 
   // upsert
   create: function(data, params, callback) {
-    var self = this;
     // use id: -1 to have Datascript generate ID
     this.ready.then(function(connection){
       var statement = _.merge({':db/add': -1}, data);
