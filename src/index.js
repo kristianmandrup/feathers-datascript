@@ -24,7 +24,7 @@ export const Service = Proto.extend({
     this.name = name;
     this.options = options;
 
-    // TODO: To be used if DB is exposed as endpoint on a server 
+    // TODO: To be used if DB is exposed as endpoint on a server
     // (ie. such as Express on Node.js)
     var connectionOptions = {
       host: options.host,
@@ -33,9 +33,8 @@ export const Service = Proto.extend({
 
     // TODO: handle failed connections.
     this.ready = new Promise(function(resolve){
-        var db = d.empty_db(options.schema, options.data || []);
-        resolve(db);
-      });
+      var db = d.empty_db(options.schema, options.data || []);
+      resolve(db);
     });
   },
 
@@ -61,10 +60,9 @@ export const Service = Proto.extend({
       var query = new Query(params).build();
 
       // what do params do here?
-      var result = d.q(query, connection)
+      var result = d.q(query, connection);
       callback(result);
     });
-
   },
 
   // upsert
@@ -72,10 +70,9 @@ export const Service = Proto.extend({
     var self = this;
     // use id: -1 to have Datascript generate ID
     this.ready.then(function(connection){
-        var statement = _.merge({':db/add': -1}, data)
-        d.transact(connection, statement);
-        callback(null, data);
-      });
+      var statement = _.merge({':db/add': -1}, data);
+      d.transact(connection, statement);
+      callback(null, data);
     });
   },
 
@@ -88,18 +85,18 @@ export const Service = Proto.extend({
   update: function(id, data, params, callback) {
     var self = this;
     self.ready.then(function(connection){
-        var statement = _.merge({':db/add': id}, data)
-        d.transact(connection, statement);
-        // Send response.
-        callback(null, data);
-      });
+      var statement = _.merge({':db/add': id}, data);
+      d.transact(connection, statement);
+      // Send response.
+      callback(null, data);
     });
   },
 
-  remove: function(id, params, callback) {
+  remove: function(id, callback) {
     var self = this;
-    self.ready.then(function(connection){
-      d.transact(conn, {':db/retractEntity': id})
+    self.ready.then(function(conn){
+      d.transact(conn, {':db/retractEntity': id});
+      callback();
     });
   },
 

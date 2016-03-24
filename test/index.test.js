@@ -10,9 +10,8 @@ let options = {};
 let people = service('people', options);
 
 function clean(done) {
-  people.ready.then(function(connection){
+  people.ready.then(function(){
       done();
-    });
   });
 }
 

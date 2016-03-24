@@ -29,10 +29,13 @@ export default class Find {
   }
 
   // for $select: '*'
+
+  // [:find ?a ?v :in $ ?e :where [?e ?a ?v]] - @ashnur
   all() {
     return {
-      find: ['?attribute', '?value'],
-      where: ['?e', '?attribute', '?value']
+      find: ['?a', '?v'],
+      // in: '$ ?e'
+      where: ['?e', '?a', '?v']
     };
   }
 
