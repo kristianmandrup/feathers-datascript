@@ -1,6 +1,6 @@
-import BaseClause from './base-clause';
+import Base from './base';
 
-export default class Eq extends BaseClause {
+export default class Eq extends Base {
   // name: 'Alice'
   constructor(name, value) {
     super(name);

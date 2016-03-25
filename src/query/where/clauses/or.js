@@ -1,8 +1,9 @@
-import BaseClause from './base-clause';
+import Base from './base';
 import Builder from '../builder';
 
-export default class Or extends BaseClause {
+export default class Or extends Base {
   constructor(obj) {
+    super();
     this.list = obj.$or;
   }
 

@@ -1,4 +1,4 @@
-export default class BaseClause {
+export default class Base {
   constructor(name) {
     this.name = name;
   }

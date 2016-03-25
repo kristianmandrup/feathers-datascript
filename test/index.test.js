@@ -2,8 +2,8 @@ import chai from 'chai';
 import baseTests from 'feathers-service-tests';
 import { errors } from 'feathers';
 import service from '../src';
-import { datascript as d } from 'datascript';
-import { Datomic } from 'datomic';
+// import { datascript as d } from 'datascript';
+// import { Datomic } from 'datomic';
 
 let expect = chai.expect;
 let _ids = {};

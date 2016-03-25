@@ -1,7 +1,7 @@
 import Proto from 'uberproto';
 // import filter from 'feathers-query-filters';
 import Query from './Query';
-import { datascript as d } from 'datascript';
+import { DataScriptAdapter } from './adapter';
 // import { types as errors } from 'feathers-errors';
 import _ from 'lodash';
 
@@ -9,7 +9,12 @@ function buildQuery(q) {
   return new Query(q).build();
 }
 
+function createAdapter(options) {
+  return new DataScriptAdapter(options);
+}
+
 // Create the service.
+// TODO: use ES6 class instead!
 export const Service = Proto.extend({
   init: function(name, options = {}){
     if(!name){
@@ -21,6 +26,7 @@ export const Service = Proto.extend({
     };
     options = _.merge(defaults, options);
 
+    this.createAdapter = options.createAdapter || createAdapter;
     this.type = 'datascript';
     this.id = options.id || 'id';
     this.name = name;
@@ -34,21 +40,28 @@ export const Service = Proto.extend({
     // };
 
     // TODO: handle failed connections.
-    this.ready = new Promise(function(resolve){
-      var db = d.empty_db(options.schema, options.data || []);
-      resolve(db);
+    this.ready = new Promise((resolve) => {
+      this.adapter = this.createAdapter(options);
+      resolve(this.adapter);
     });
   },
 
+  q: function(query, connection) {
+    return this.adapter.q(query, connection);
+  },
+
+  transact: function(connection, statement) {
+    return this.adapter.transact(connection, statement);
+  },
 
   find: function(params, callback) {
     var self = this;
 
-    self.ready.then(function(connection){
+    self.ready.then((connection) => {
       var query = buildQuery(params.query);
 
       // Start with finding all, and limit when necessary.
-      var result = d.q(query, connection);
+      var result = this.q(query, connection);
       callback(result);
     });
   },
@@ -56,12 +69,12 @@ export const Service = Proto.extend({
   get(id, params, callback) {
     var self = this;
 
-    self.ready.then(function(connection){
+    self.ready.then((connection) => {
       params.$id = id;
       var query = new Query(params).build();
 
       // what do params do here?
-      var result = d.q(query, connection);
+      var result = this.q(query, connection);
       callback(result);
     });
   },
@@ -69,9 +82,9 @@ export const Service = Proto.extend({
   // upsert
   create: function(data, params, callback) {
     // use id: -1 to have Datascript generate ID
-    this.ready.then(function(connection){
+    this.ready.then((connection) => {
       var statement = _.merge({':db/add': -1}, data);
-      d.transact(connection, statement);
+      this.transact(connection, statement);
       callback(null, data);
     });
   },
@@ -84,9 +97,9 @@ export const Service = Proto.extend({
   // upsert
   update: function(id, data, params, callback) {
     var self = this;
-    self.ready.then(function(connection){
+    self.ready.then((connection) => {
       var statement = _.merge({':db/add': id}, data);
-      d.transact(connection, statement);
+      this.transact(connection, statement);
       // Send response.
       callback(null, data);
     });
@@ -94,8 +107,8 @@ export const Service = Proto.extend({
 
   remove: function(id, callback) {
     var self = this;
-    self.ready.then(function(conn){
-      d.transact(conn, {':db/retractEntity': id});
+    self.ready.then((conn) => {
+      this.transact(conn, {':db/retractEntity': id});
       callback();
     });
   },

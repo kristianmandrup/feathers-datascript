@@ -1,11 +1,11 @@
-import BaseClause from './base-clause';
+import Base from './base';
 
 // match entity Id
-export default class Id extends BaseClause {
+export default class Id extends Base {
   // $id: 27
   // perhaps we could call as: 'People', 27, ie. with class as well?
   constructor(id) {
-    // super(name)
+    super();
     this.id = id;
   }
 

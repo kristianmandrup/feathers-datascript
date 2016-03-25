@@ -11,11 +11,11 @@ export const predicateMap = {
   '$gte': '>='
 };
 
-import BaseClause from './base-clause';
+import Base from './base';
 import Builder from '../builder';
 
 // name: {$ne: 'Alice'} => $ne: [name: 'Alice'] ??
-export default class Predicate extends BaseClause {
+export default class Predicate extends Base {
   constructor(name, predicate) {
     super(name);
     this.value = predicate.$ne;
