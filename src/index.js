@@ -10,6 +10,7 @@ function buildQuery(q) {
 }
 
 function createAdapter(options) {
+  console.log('createAdapter', options, DataScriptAdapter);
   return new DataScriptAdapter(options);
 }
 
@@ -41,23 +42,29 @@ export const Service = Proto.extend({
 
     // TODO: handle failed connections.
     this.ready = new Promise((resolve) => {
+      console.log('Service Ready');
       this.adapter = this.createAdapter(options);
-      resolve(this.adapter);
+      console.log('Adapter created');
+      resolve(this.adapter.connection);
     });
   },
 
+  _log(...args) {
+    console.log('Service', ...args);
+  },
+
   q: function(query, connection) {
+    this._log('transact', query, connection);
     return this.adapter.q(query, connection);
   },
 
   transact: function(connection, statement) {
+    this._log('transact', connection, statement);
     return this.adapter.transact(connection, statement);
   },
 
   find: function(params, callback) {
-    var self = this;
-
-    self.ready.then((connection) => {
+    this.ready.then((connection) => {
       var query = buildQuery(params.query);
 
       // Start with finding all, and limit when necessary.
@@ -83,21 +90,24 @@ export const Service = Proto.extend({
   create: function(data, params, callback) {
     // use id: -1 to have Datascript generate ID
     this.ready.then((connection) => {
+      console.log('create', data);
       var statement = _.merge({':db/add': -1}, data);
-      this.transact(connection, statement);
+      var result = this.transact(connection, statement);
+      console.log('created', result);
       callback(null, data);
     });
   },
 
   // upsert
   patch: function(id, data, params, callback) {
+    console.log('patch', id, data, params);
     this.update(id, data, params, callback);
   },
 
   // upsert
   update: function(id, data, params, callback) {
-    var self = this;
-    self.ready.then((connection) => {
+    console.log('update', id, data, params);
+    this.ready.then((connection) => {
       var statement = _.merge({':db/add': id}, data);
       this.transact(connection, statement);
       // Send response.
@@ -106,9 +116,24 @@ export const Service = Proto.extend({
   },
 
   remove: function(id, callback) {
-    var self = this;
-    self.ready.then((conn) => {
-      this.transact(conn, {':db/retractEntity': id});
+    console.log('remove', id);
+    if (!id) {
+      throw 'remove requires id';
+    }
+    this.ready.then((conn) => {
+      if (id) {
+        this.transact(conn, {':db/retractEntity': id});
+      } else {
+        // if no id, remove all
+        // http://docs.datomic.com/excision.html
+        // Excision is the complete removal of a set of datoms matching a predicate.
+
+        // or pull (find) all entity ids for this service
+        // and delete them
+        // let entities = this.pull(conn, '*');
+        throw 'remove requires id';
+      }
+
       callback();
     });
   },

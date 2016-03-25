@@ -1,1 +1,1 @@
-export { default as DatascriptAdapter } from './datascript';
+export { default as DataScriptAdapter } from './datascript';
