@@ -10,7 +10,7 @@ function buildQuery(q) {
 }
 
 function createAdapter(options) {
-  console.log('createAdapter', options, DataScriptAdapter);
+  console.log('createAdapter', options);
   return new DataScriptAdapter(options);
 }
 
@@ -53,13 +53,13 @@ export const Service = Proto.extend({
     console.log('Service', ...args);
   },
 
-  q: function(query, connection) {
+  _q: function(query, connection) {
     this._log('transact', query, connection);
     return this.adapter.q(query, connection);
   },
 
-  transact: function(connection, statement) {
-    this._log('transact', connection, statement);
+  _transact: function(connection, statement) {
+    this._log('transact');
     return this.adapter.transact(connection, statement);
   },
 
@@ -68,7 +68,7 @@ export const Service = Proto.extend({
       var query = buildQuery(params.query);
 
       // Start with finding all, and limit when necessary.
-      var result = this.q(query, connection);
+      var result = this._q(query, connection);
       callback(result);
     });
   },
@@ -92,7 +92,8 @@ export const Service = Proto.extend({
     this.ready.then((connection) => {
       console.log('create', data);
       var statement = _.merge({':db/add': -1}, data);
-      var result = this.transact(connection, statement);
+      this._log('create statement', statement);
+      var result = this._transact(connection, statement);
       console.log('created', result);
       callback(null, data);
     });
@@ -109,7 +110,7 @@ export const Service = Proto.extend({
     console.log('update', id, data, params);
     this.ready.then((connection) => {
       var statement = _.merge({':db/add': id}, data);
-      this.transact(connection, statement);
+      this._transact(connection, statement);
       // Send response.
       callback(null, data);
     });
@@ -122,7 +123,7 @@ export const Service = Proto.extend({
     }
     this.ready.then((conn) => {
       if (id) {
-        this.transact(conn, {':db/retractEntity': id});
+        this._transact(conn, {':db/retractEntity': id});
       } else {
         // if no id, remove all
         // http://docs.datomic.com/excision.html
