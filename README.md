@@ -5,6 +5,21 @@ A [datascript](https://www.npmjs.com/package/datascript) and [datomic](http://do
 
 See [datascript-tutorial](https://github.com/kristianmandrup/datascript-tutorial)
 
+## Test datascript is working
+
+```bash
+$ node sandbox/simple-tests.js
+```
+
+
+```bash
+$ node sandbox/datascript-tests.js
+...
+[ OK ] test_filter
+Ran 18 tests containing 66 assertions.
+Testing complete: 0 failures, 0 errors.
+```
+
 ## Datomic JS driver
 
 Also use Datomic from JS via [datomicjs](https://github.com/kristianmandrup/datomicjs) module.

@@ -1,4 +1,6 @@
 import { default as d } from 'datascript';
+// import edn from 'jsedn';
+// import util from 'util';
 
 export default class DataScriptAdapter {
   constructor(options = {}) {
@@ -24,13 +26,19 @@ export default class DataScriptAdapter {
     return d.empty_db(options.schema, options.data || []);
   }
 
-  q(query, connection) {
+  // connection
+  q(query) {
+    // var ednQuery = edn.parse(query);
     this._log('q', query);
-    return d.q(query, connection);
+    return d.q(query, this.db);
   }
 
   // do we need a callback?
   transact(connection, statement) {
+    if (!statement.length) {
+      statement = [statement];
+    }
+
     this._log('transact', statement);
     return d.transact(connection, statement);
   }

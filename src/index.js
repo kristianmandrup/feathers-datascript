@@ -1,4 +1,3 @@
-import Proto from 'uberproto';
 // import filter from 'feathers-query-filters';
 import Query from './Query';
 import { DataScriptAdapter } from './adapter';
@@ -16,8 +15,8 @@ function createAdapter(options) {
 
 // Create the service.
 // TODO: use ES6 class instead!
-export const Service = Proto.extend({
-  init: function(name, options = {}){
+export default class PersonService {
+  constructor(name, options = {}){
     if(!name){
       throw new SyntaxError('You must pass a String as the name of the entity');
     }
@@ -41,113 +40,115 @@ export const Service = Proto.extend({
     // };
 
     // TODO: handle failed connections.
-    this.ready = new Promise((resolve) => {
-      console.log('Service Ready');
-      this.adapter = this.createAdapter(options);
-      console.log('Adapter created');
-      resolve(this.adapter.connection);
-    });
-  },
+    this.adapter = this.adapter || this.createAdapter(options);
+    console.log('Adapter created');
+    return Promise.resolve(this.adapter);
+  }
+
+  get db() {
+    return this.adapter.db;
+  }
+
+  get connection() {
+    return this.adapter.connection;
+  }
 
   _log(...args) {
     console.log('Service', ...args);
-  },
+  }
 
-  _q: function(query, connection) {
-    this._log('transact', query, connection);
-    return this.adapter.q(query, connection);
-  },
+  _q(query) {
+    this._log('transact', query);
+    return this.adapter.q(query, this.db);
+  }
 
-  _transact: function(connection, statement) {
+  _transact(connection, statement) {
     this._log('transact');
-    return this.adapter.transact(connection, statement);
-  },
+    return this.adapter.transact(this.connection, statement);
+  }
 
-  find: function(params, callback) {
-    this.ready.then((connection) => {
-      var query = buildQuery(params.query);
+  // retrieves a list of all resources from the service.
+  // Provider parameters will be passed as params.query
+  find(params) {
+    if (!params.query) {
+      throw 'params missing :query option';
+    }
+    var query = buildQuery(params.query);
 
-      // Start with finding all, and limit when necessary.
-      var result = this._q(query, connection);
-      callback(result);
-    });
-  },
+    // Start with finding all, and limit when necessary.
+    var result = this._q(query);
+    return Promise.resolve(result);
+  }
 
-  get(id, params, callback) {
-    var self = this;
+  // retrieves a single resource with the given id from the service.
+  get(id, params) {
+    params.$id = id;
+    var query = new Query(params).build();
 
-    self.ready.then((connection) => {
-      params.$id = id;
-      var query = new Query(params).build();
+    // what do params do here?
+    var result = this._q(query);
+    return Promise.resolve(result);
+  }
 
-      // what do params do here?
-      var result = this.q(query, connection);
-      callback(result);
-    });
-  },
+  // creates a new resource with data.
+  // The method should return a Promise with the newly created data.
+  // data may also be an array which creates and returns a list of resources.
+  create(data) {
+    console.log('create', data);
+    const findMaxId = `[:find ?id :where [?e ":person/id" ?id]]`;
 
-  // upsert
-  create: function(data, params, callback) {
-    // use id: -1 to have Datascript generate ID
-    this.ready.then((connection) => {
-      console.log('create', data);
-      var statement = _.merge({':db/add': -1}, data);
-      this._log('create statement', statement);
-      var result = this._transact(connection, statement);
-      console.log('created', result);
-      callback(null, data);
-    });
-  },
+    const maxId = this._q(findMaxId);
+    console.log('max person id', maxId);
+    var nextId = maxId.length ? maxId + 1 : 0;
+    var statement = _.merge({':db/add': -1, ':person/id': nextId}, data);
+    this._log('create statement', statement);
+    var result = this._transact(statement);
+    console.log('created', result.db_after);
+    return Promise.resolve({id: nextId});
+  }
 
-  // upsert
-  patch: function(id, data, params, callback) {
+  // merges the existing data of the resource identified by id with the new data.
+  // id can also be null indicating that multiple resources should be patched.
+  // The method should return with the complete updated resource data.
+  // Implement patch additionally to update if you want to separate
+  // between partial and full updates and support the PATCH HTTP method.
+  patch(id, data, params) {
     console.log('patch', id, data, params);
-    this.update(id, data, params, callback);
-  },
+    var statement = _.merge({':db/id': id}, data);
+    var result = this._transact(statement);
+    return Promise.resolve(result.db_after);
+  }
 
-  // upsert
-  update: function(id, data, params, callback) {
+  // replaces the resource identified by id with data.
+  // The method should return a Promise with the complete updated resource data.
+  // id can also be null when updating multiple records.
+  update(id, data, params) {
     console.log('update', id, data, params);
-    this.ready.then((connection) => {
-      var statement = _.merge({':db/add': id}, data);
-      this._transact(connection, statement);
-      // Send response.
-      callback(null, data);
-    });
-  },
+    // should retract, then add new entity
+    const statements = {
+      add: _.merge({':db/add': id}, data),
+      remove: {':db.fn/retractEntity': id}
+    };
+    var result = this._transact([statements.remove, statements.add]);
+    // Send response.
+    return Promise.resolve(result.db_after);
+  }
 
-  remove: function(id, callback) {
+  // removes the resource with id. The method should return a Promise with
+  // the removed resource. id can also be null indicating to delete
+  // multiple resources.
+  remove(id) {
     console.log('remove', id);
     if (!id) {
       throw 'remove requires id';
     }
-    this.ready.then((conn) => {
-      if (id) {
-        this._transact(conn, {':db/retractEntity': id});
-      } else {
-        // if no id, remove all
-        // http://docs.datomic.com/excision.html
-        // Excision is the complete removal of a set of datoms matching a predicate.
-
-        // or pull (find) all entity ids for this service
-        // and delete them
-        // let entities = this.pull(conn, '*');
-        throw 'remove requires id';
-      }
-
-      callback();
-    });
-  },
-
-  setup: function(app) {
-    this.app = app;
-    this.service = app.service.bind(app);
+    if (id) {
+      var result = this._transact({':db/retractEntity': id});
+      return Promise.resolve(result.db_after);
+    }
   }
-});
 
-export default function() {
-  return Proto.create.apply(Service, arguments);
+  setup(app) {
+    this.app = app;
+  }
 }
-
-
-

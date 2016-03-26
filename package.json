@@ -44,12 +44,12 @@
   "dependencies": {
     "datascript": "^0.15.0",
     "datomic": "kristianmandrup/datomicjs",
+    "jsedn": "kristianmandrup/jsedn",
     "debug": "^2.2.0",
     "feathers-errors": "^0.2.5",
     "feathers-query-filters": "^1.1.1",
     "filter-object": "^2.1.0",
-    "lodash": "^3.10.1",
-    "uberproto": "^1.1.2"
+    "lodash": "^3.10.1"
   },
   "devDependencies": {
     "babel-cli": "^6.1.18",
@@ -58,6 +58,7 @@
     "feathers": "^1.2.0",
     "feathers-service-tests": "^0.3.0",
     "jshint": "^2.8.0",
-    "mocha": "^2.3.3"
+    "mocha": "^2.3.3",
+    "underscore": "x"
   }
 }
