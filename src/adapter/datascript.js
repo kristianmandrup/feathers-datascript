@@ -1,63 +1,33 @@
-import { default as d } from 'datascript';
-// import edn from 'jsedn';
-// import util from 'util';
+import util from 'util';
+import BaseAdapter from './base';
+import {datascript as d } from 'datascript';
 
-function toArray(obj) {
-  console.log('toArray', obj);
-  if (obj.length) {
-    return obj; // already an array
-  }
-  const keys = Object.keys(obj);
-  var arr = keys.reduce((prev, key) => {
-    console.log('concat', prev, key);
-    return prev.concat([key, obj[key]]);
-  }, []);
-  console.log('arr', arr);
-  return arr;
-}
-
-export default class DataScriptAdapter {
+export default class DataScriptAdapter extends BaseAdapter {
   constructor(options = {}) {
-    console.log('creating DataScriptAdapter');
-    this.options = options;
-    this.db = this.emptyDb(options.schema || {}, options.data || []);
-    this.connection = d.conn_from_db(this.db);
-    this.addListeners();
+    super(options);
+    this.d = this.d || d;
+    this.connection = this.d;
   }
 
-  addListeners() {
-    d.listen(this.connection, (report) => {
-      console.log('Tx Report', report);
-    });
+  createEmptyDb() {
+    return this.connection.empty_db(this.options.schema, this.options.data || []);
   }
 
-  _log(...args) {
-    console.log('DataScriptAdapter', ...args);
+  createConnection() {
+    return this.connection.conn_from_db(this.db);
   }
 
-  emptyDb(options) {
-    this._log('create empty DB', options);
-    return d.empty_db(options.schema, options.data || []);
+  performPull(query) {
+    return this.connection.pull(query, this.db);
   }
 
-  // connection
-  q(query) {
-    // var ednQuery = edn.parse(query);
-    this._log('q', query);
-    return d.q(query, this.db);
+  performQuery(query) {
+    return this.connection.q(query, this.db);
   }
 
-  // do we need a callback?
-  transact(statement) {
-    if (!statement.length) {
-      statement = [statement];
-      statement = statement.map(transaction => {
-        return toArray(transaction);
-      });
-    }
-
-    this._log('transact', statement);
-    return d.transact(this.connection, statement);
+  performTransaction(statement) {
+    return this.connection.transact(this.connection, statement);
   }
 }
+
 

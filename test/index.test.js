@@ -2,8 +2,6 @@ import chai from 'chai';
 // import baseTests from 'feathers-service-tests';
 // import { errors } from 'feathers';
 import Service from '../src';
-// import { datascript as d } from 'datascript';
-// import { Datomic } from 'datomic';
 
 let people;
 let expect = chai.expect;
@@ -38,20 +36,12 @@ describe('feathers-datascript', () => {
   after(clean);
 
   beforeEach(done => {
-    console.log('creating people:', people);
     people.create({
       ':person/email': 'douglas.adams@gmail.com',
       ':person/name': 'Doug',
       ':person/age': 42
     }, {}).then(data => {
-      // if (error) {
-      //   console.error(error);
-      //   throw 'people create error';
-      // }
       var id = data[':person/id'];
-
-      console.log('People created with data:', data);
-      console.log('person Doug created, id:', id);
       _ids.Doug = id;
       done();
     }).catch(err => {
@@ -61,10 +51,8 @@ describe('feathers-datascript', () => {
   });
 
   afterEach(done => {
-    console.log('after: remove doug ', _ids.Doug);
     people.remove(_ids.Doug, {})
-    .then((data) => {
-      console.log('people removed', data);
+    .then(() => {
       done();
     }).catch(err => {
       console.error(err);

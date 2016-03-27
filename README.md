@@ -5,6 +5,14 @@ A [datascript](https://www.npmjs.com/package/datascript) and [datomic](http://do
 
 See [datascript-tutorial](https://github.com/kristianmandrup/datascript-tutorial)
 
+### Adapters
+
+- [datascript](https://www.npmjs.com/package/datascript)
+- [datomic](https://github.com/kristianmandrup/datomicjs)
+- [PossibleDB](https://github.com/runexec/PossibleDB) (TODO)
+
+PossibleDB adapter requires a JS API version available on `npm`.
+
 ## Test datascript is working
 
 ```bash
