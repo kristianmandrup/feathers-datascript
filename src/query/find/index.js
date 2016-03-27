@@ -25,7 +25,7 @@ export default class Find {
   }
 
   build() {
-    return this[this.selector]();
+    return this[this.selector.type]();
   }
 
   // for $select: '*'
@@ -46,6 +46,6 @@ export default class Find {
   // }
 
   only() {
-    return new Only(this.selector.set.only).build();
+    return new Only(this.selector.attrs).build();
   }
 }

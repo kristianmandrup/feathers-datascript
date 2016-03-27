@@ -12,10 +12,10 @@ export default class Only {
   }
 
   _whereClauses() {
-    this.attrs.map(name => [`?e ?${name} ?${name}-value`]);
+    return this.attrs.map(name => `?e ?${name} ?${name}-value`);
   }
 
   _findAttrs() {
-    this.attrs.map(name => `?${name} ?${name}-value`);
+    return this.attrs.map(name => `?${name} ?${name}-value`);
   }
 }
