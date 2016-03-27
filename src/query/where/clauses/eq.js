@@ -9,14 +9,13 @@ export default class Eq extends Base {
 
   build() {
     return {
-      ':where': this._where()
+      ':where': this._where
     };
   }
 
-  _where() {
+  get _where() {
     return `[?eid ?${this.name} ${this._val}]`;
   }
-
 
   get _val() {
     switch (typeof this.value) {
@@ -27,3 +26,7 @@ export default class Eq extends Base {
     }
   }
 }
+
+Eq.create = (name, value) => {
+  return new Eq(name, value);
+};

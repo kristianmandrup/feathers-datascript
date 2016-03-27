@@ -14,21 +14,21 @@ export default class Id extends Base {
   // [?eid :entity/type ${this.name}]
   build() {
     return {
-      ':find': this._find(),
-      ':in': this._in(),
-      ':where': this._where()
+      ':find': this._find,
+      ':in': this._in,
+      ':where': this._where
     };
   }
 
-  _find() {
+  get _find() {
     return ['?id'];
   }
 
-  _in() {
+  get _in() {
     return ['?id'];
   }
 
-  _where() {
+  get _where() {
     return `[?eid ${this._entityIdAttr()} ?id]`;
   }
 
@@ -36,3 +36,7 @@ export default class Id extends Base {
     return `:${this.entityClass}/id`;
   }
 }
+
+Id.create = (entityClass, id) => {
+  return new Id(entityClass, id);
+};

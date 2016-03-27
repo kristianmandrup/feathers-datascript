@@ -14,6 +14,12 @@ export default class Or extends Base {
   // Potentially recursive:
   //   {$or: [{name: {'$ne': 'Alice'}, {age: {'$gte': 21}]}
   build() {
+    return {
+      ':where': this._where
+    };
+  }
+
+  get _where() {
     return `(or ${this.clauses()})`;
   }
 
@@ -24,8 +30,11 @@ export default class Or extends Base {
     }, []);
   }
 
-
   clause(obj) {
     new Builder(obj);
   }
 }
+
+Or.create = (obj) => {
+  return new Or(obj);
+};

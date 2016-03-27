@@ -18,9 +18,10 @@ import Builder from '../builder';
 export default class Predicate extends Base {
   constructor(name, predicate) {
     super(name);
-    this.value = predicate.$ne;
+    var key = Object.keys(predicate)[0];
+    this.value = predicate[key];
     this.predicate = predicate;
-    this.outputPredicate = this.predicateMap[predicate];
+    this.outputPredicate = this.predicateMap[key];
   }
 
   get predicateMap() {
@@ -28,6 +29,12 @@ export default class Predicate extends Base {
   }
 
   build() {
+    return {
+      ':where': this._where
+    };
+  }
+
+  get _where() {
     return `[(${this.outputPredicate} ${this.clause})]`;
   }
 

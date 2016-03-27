@@ -44,9 +44,9 @@ describe('Select Only', () => {
       ':where': whereClauses
     };
 
-    expectIncluded(only._find(), findAttrs);
-    expectIncluded(only._in(), ins);
-    expectIncluded(only._where(), whereClauses);
+    expectIncluded(only._find, findAttrs);
+    expectIncluded(only._in, ins);
+    expectIncluded(only._where, whereClauses);
 
     expect(only.build()).to.eql(query);
     done();
