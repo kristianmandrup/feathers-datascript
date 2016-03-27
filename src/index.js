@@ -9,7 +9,6 @@ function buildQuery(q) {
 }
 
 function createAdapter(options) {
-  console.log('createAdapter', options);
   return new DataScriptAdapter(options);
 }
 
@@ -90,6 +89,18 @@ export default class PersonService {
     return ':person/id';
   }
 
+  addEntity(data) {
+    return _.merge({':db/add': -1}, data);
+  }
+
+  updateEntity(id, data) {
+    return _.merge({':db/add': id}, data);
+  }
+
+  removeEntity(id) {
+    return {':db.fn/retractEntity': id};
+  }
+
   // creates a new resource with data.
   // The method should return a Promise with the newly created data.
   // data may also be an array which creates and returns a list of resources.
@@ -97,7 +108,7 @@ export default class PersonService {
     this._q(findMaxId).then(queryRes => {
       var nextId = queryRes.length ? queryRes[0] + 1 : 0;
       var transactData = _.merge({[this.id]: nextId}, data);
-      var statement = _.merge({':db/add': -1}, transactData);
+      var statement = this.addEntity(transactData);
       // this._log('create statement', statement);
       this._transact(statement).then(result => {
         return this._resultFor(transactData);
@@ -111,7 +122,7 @@ export default class PersonService {
   // Implement patch additionally to update if you want to separate
   // between partial and full updates and support the PATCH HTTP method.
   patch(id, data, params) {
-    var statement = _.merge({':db/id': id}, data);
+    var statement = this.updateEntity(id, data);
     this._transact(statement).then(result => {
       return this._resultFor(result.db_after);
     });
@@ -124,8 +135,8 @@ export default class PersonService {
     // console.log('update', id, data, params);
     // should retract, then add new entity
     const statements = {
-      add: _.merge({':db/add': id}, data),
-      remove: {':db.fn/retractEntity': id}
+      add: this.updateEntity(id, data),
+      remove: this.removeEntity(id)
     };
     var transactions = [statements.remove, statements.add];
     this._transact(transactions).then(result => {
@@ -141,7 +152,8 @@ export default class PersonService {
     if (isNaN(id)) {
       throw 'remove requires a numeric id';
     }
-    this._transact({':db.fn/retractEntity': id}).then(result => {
+    var statement = this.removeEntity(id);
+    this._transact(statement).then(result => {
       return this._resultFor(result.db_after);
     });
   }
