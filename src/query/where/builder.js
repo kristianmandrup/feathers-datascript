@@ -3,25 +3,20 @@ import { predicateMap } from './clauses/predicate';
 
 export default class Builder {
   constructor(name, predicate) {
-    this.predicate = {};
-
-    // TODO: move to extract?
     if (typeof predicate !== 'object') {
-      this.predicate.key = '$eq';
-      this.predicate.value = predicate;
+      predicate = {'eq': predicate};
     }
-
     this.name = name;
-    this.predicate = this.predicate || this._extract(predicate);
-
-    console.log('Builder:', name, this.predicate);
+    this.predicate = predicate;
+    this.pred = this._extract(predicate);
   }
 
   _extract(predicate) {
     var key = Object.keys(predicate)[0];
+    var value = predicate[key];
     return {
-      key: key,
-      value: predicate[key]
+      key: key.replace('$', ''),
+      value: value
     };
   }
 
@@ -35,23 +30,13 @@ export default class Builder {
   }
 
   build() {
-    return this.type().create(this.name, this.predicate);
+    var clazz = this.type();
+    var inst = clazz.create(this.name, this.predicate);
+    return inst.build();
   }
 
   type() {
-    if (typeof this.predicate !== 'object') {
-      return this.clause.eq;
-    }
-    if (this.predicate === '$id') {
-      return this.clause.id;
-    }
-    if (this.predicate === '$or') {
-      return this.clause.or;
-    }
-    if (predicateMap[this.predicate]) {
-      return this.clause.predicate;
-    }
-    return null;
+    return this.clause[this.pred.key] || this.clause.predicate;
   }
 }
 

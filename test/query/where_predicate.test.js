@@ -18,7 +18,7 @@ describe('Predicate', () => {
 
   it('Builder: > 32', done => {
     let builder = new Builder('age', {$gt: 32});
-    expect(builder.build()).to.eql(`?eid ?age 32`);
+    expect(builder.build()[':where']).to.eql(`[(> [?eid ?age 32])]`);
     done();
   });
 
