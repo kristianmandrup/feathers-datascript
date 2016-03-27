@@ -1,4 +1,5 @@
 import chai from 'chai';
+import Find from '../../../src/query/find';
 
 let expect = chai.expect;
 
@@ -14,8 +15,10 @@ describe('feathers-datascript', () => {
     done();
   });
 
-  it('basic functionality', done => {
-    expect(typeof 1).to.equal('number');
+  it('empty find', done => {
+    let find = new Find();
+
+    expect(find.selector).to.be.an.instanceof(Find);
     done();
   });
 });

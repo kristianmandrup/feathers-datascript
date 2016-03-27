@@ -2,11 +2,14 @@ import util from 'util';
 import BaseAdapter from './base';
 import { Datomic } from 'datomic';
 
-export default class DataScriptAdapter extends BaseAdapter {
+export default class DatomicAdapter extends BaseAdapter {
   constructor(options = {}) {
     super(options);
     this.d = this.d || this.createRemoteConn();
     this.connection = this.d;
+    this.driver = this.d;
+    this.addListeners();
+    this.createEmptyDb();
   }
 
   get defaultConnOpts() {
@@ -24,12 +27,15 @@ export default class DataScriptAdapter extends BaseAdapter {
     });
   }
 
+  addListeners() {    
+  }
+
   createRemoteConn() {
     return new Datomic(this.connOpts());
   }
 
   createEmptyDb(cb) {
-    this.connection.createDb(this.options.name).then(res => {
+    this.driver.createDb(this.options.name).then(res => {
       // transact: schema and data
       var transactions = [
         this.options.schema || [],
@@ -51,13 +57,13 @@ export default class DataScriptAdapter extends BaseAdapter {
   }
 
   performQuery(query) {
-    return this.connection.q(query);
+    return this.driver.q(query);
   }
 
   // NOT available in REST API
   // performPull(query)
 
   performTransaction(statement) {
-    return this.d.transact(statement);
+    return this.driver.transact(statement);
   }
 }

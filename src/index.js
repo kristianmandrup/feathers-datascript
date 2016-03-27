@@ -13,6 +13,8 @@ function createAdapter(options) {
   return new DataScriptAdapter(options);
 }
 
+const findMaxId = `[:find ?id :where [?e ":person/id" ?id]]`;
+
 // Create the service.
 // TODO: use ES6 class instead!
 export default class PersonService {
@@ -84,19 +86,23 @@ export default class PersonService {
     return this._resultFor(this._q(query));
   }
 
+  get id() {
+    return ':person/id';
+  }
+
   // creates a new resource with data.
   // The method should return a Promise with the newly created data.
   // data may also be an array which creates and returns a list of resources.
   create(data) {
-    const findMaxId = `[:find ?id :where [?e ":person/id" ?id]]`;
-
-    const maxId = this._q(findMaxId);
-    var nextId = maxId.length ? maxId + 1 : 0;
-    var transactData = _.merge({':person/id': nextId}, data);
-    var statement = _.merge({':db/add': -1}, transactData);
-    // this._log('create statement', statement);
-    var result = this._transact(statement);
-    return this._resultFor(transactData);
+    this._q(findMaxId).then(queryRes => {
+      var nextId = queryRes.length ? queryRes[0] + 1 : 0;
+      var transactData = _.merge({[this.id]: nextId}, data);
+      var statement = _.merge({':db/add': -1}, transactData);
+      // this._log('create statement', statement);
+      this._transact(statement).then(result => {
+        return this._resultFor(transactData);
+      });
+    });
   }
 
   // merges the existing data of the resource identified by id with the new data.
@@ -106,8 +112,9 @@ export default class PersonService {
   // between partial and full updates and support the PATCH HTTP method.
   patch(id, data, params) {
     var statement = _.merge({':db/id': id}, data);
-    var result = this._transact(statement);
-    return this._resultFor(result.db_after);
+    this._transact(statement).then(result => {
+      return this._resultFor(result.db_after);
+    });
   }
 
   // replaces the resource identified by id with data.
@@ -120,9 +127,10 @@ export default class PersonService {
       add: _.merge({':db/add': id}, data),
       remove: {':db.fn/retractEntity': id}
     };
-    var result = this._transact([statements.remove, statements.add]);
-    // Send response.
-    return this._resultFor(result.tx_data);
+    var transactions = [statements.remove, statements.add];
+    this._transact(transactions).then(result => {
+      return this._resultFor(result.db_after);
+    });
   }
 
   // removes the resource with id. The method should return a Promise with
@@ -133,8 +141,9 @@ export default class PersonService {
     if (isNaN(id)) {
       throw 'remove requires a numeric id';
     }
-    var result = this._transact({':db.fn/retractEntity': id});
-    return this._resultFor(result.tx_data);
+    this._transact({':db.fn/retractEntity': id}).then(result => {
+      return this._resultFor(result.db_after);
+    });
   }
 
   setup(app) {

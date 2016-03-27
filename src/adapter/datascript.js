@@ -1,32 +1,36 @@
 import util from 'util';
 import BaseAdapter from './base';
-import {datascript as d } from 'datascript';
+import datascript from 'datascript';
 
 export default class DataScriptAdapter extends BaseAdapter {
   constructor(options = {}) {
     super(options);
-    this.d = this.d || d;
-    this.connection = this.d;
+    this.d = this.d || datascript;
+    this.driver = this.d;
+    this.db = this.createEmptyDb();
+    this.connection = this.createConnection();
+    this.addListeners();
+
   }
 
   createEmptyDb() {
-    return this.connection.empty_db(this.options.schema, this.options.data || []);
+    return this.driver.empty_db(this.options.schema, this.options.data || []);
   }
 
   createConnection() {
-    return this.connection.conn_from_db(this.db);
+    return this.driver.conn_from_db(this.db);
   }
 
   performPull(query) {
-    return this.connection.pull(query, this.db);
+    return this.driver.pull(query, this.db);
   }
 
   performQuery(query) {
-    return this.connection.q(query, this.db);
+    return this.driver.q(query, this.db);
   }
 
   performTransaction(statement) {
-    return this.connection.transact(this.connection, statement);
+    return this.driver.transact(this.connection, statement);
   }
 }
 

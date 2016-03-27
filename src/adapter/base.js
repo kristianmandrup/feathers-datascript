@@ -1,13 +1,9 @@
 import util from './util';
-import BaseAdapter from './base';
 
-export default class DataScriptAdapter extends BaseAdapter {
+export default class BaseAdapter {
   constructor(options = {}) {
     this.d = options.d;
     this.options = options;
-    this.createEmptyDb();
-    this.connection = this.createConnection();
-    this.addListeners();
   }
 
   createEmptyDb() {

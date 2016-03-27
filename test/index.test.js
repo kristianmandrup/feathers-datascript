@@ -9,13 +9,13 @@ let _ids = {};
 let options = {
   schema: {
     ':person/email': {
-      ':db/valueType': ':db.type/string',
-      ':db/cardinality': ':db.cardinality/one',
+      // ':db/valueType': ':db.type/string',
+      // ':db/cardinality': ':db.cardinality/one',
       ':db/unique': ':db.unique/identity'
     },
     ':person/id': {
-      ':db/valueType': ':db.type/bigint',
-      ':db/cardinality': ':db.cardinality/one',
+      // ':db/valueType': ':db.type/bigint',
+      // ':db/cardinality': ':db.cardinality/one',
       ':db/unique': ':db.unique/identity'
     }
   }
