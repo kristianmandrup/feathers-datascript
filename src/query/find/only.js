@@ -7,15 +7,20 @@ export default class Only {
   build() {
     return {
       find: this._findAttrs(),
+      ins: this._ins(),
       where: this._whereClauses()
     };
   }
 
-  _whereClauses() {
-    return this.attrs.map(name => `?e ?${name} ?${name}-value`);
+  _findAttrs() {
+    return this.attrs.map(name => `?${name}-value`);
   }
 
-  _findAttrs() {
-    return this.attrs.map(name => `?${name} ?${name}-value`);
+  _ins() {
+    return this.attrs.map(name => `?${name}`);
+  }
+
+  _whereClauses() {
+    return this.attrs.map(name => `?e ?${name} ?${name}-value`);
   }
 }

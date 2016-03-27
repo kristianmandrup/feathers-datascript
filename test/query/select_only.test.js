@@ -3,6 +3,12 @@ import Only from '../../src/query/find/only';
 
 let expect = chai.expect;
 
+function expectIncluded(expected, list) {
+  for (let val of list) {
+    expect(expected).to.include(val);
+  }
+}
+
 describe('Select Only', () => {
   // before(clean);
   // after(clean);
@@ -19,15 +25,22 @@ describe('Select Only', () => {
     let attrs = ['email', 'name'];
     let only = new Only(attrs);
     expect(only).to.be.an.instanceof(Only);
-    let expected = [
+    let whereClauses = [
       '?e ?email ?email-value',
       '?e ?name ?name-value'
     ];
-    let where = only._whereClauses();
-    for (let val of expected) {
-      expect(where).to.include(val);
-    }
-    // expect(only._findAttrs()).to.eq(attrs);
+    let findAttrs = [
+      '?email-value',
+      '?name-value'
+    ];
+    let ins = [
+      '?email',
+      '?name'
+    ];
+
+    expectIncluded(only._findAttrs(), findAttrs);
+    expectIncluded(only._ins(), ins);
+    expectIncluded(only._whereClauses(), whereClauses);
     done();
   });
 });
