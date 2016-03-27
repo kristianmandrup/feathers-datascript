@@ -17,7 +17,7 @@ describe('feathers-datascript', () => {
 
   it('empty find', done => {
     let find = new Find();
-
+    console.log('find', find);
     expect(find.selector).to.be.an.instanceof(Find);
     done();
   });

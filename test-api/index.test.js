@@ -1,7 +1,7 @@
 import chai from 'chai';
+import Service from '../src';
 // import baseTests from 'feathers-service-tests';
 // import { errors } from 'feathers';
-import Service from '../src';
 
 let people;
 let expect = chai.expect;
@@ -14,6 +14,7 @@ let options = {
       ':db/unique': ':db.unique/identity'
     },
     ':person/id': {
+      // NOTE: :db/valueType in datascript only accepts :db.type/ref
       // ':db/valueType': ':db.type/bigint',
       // ':db/cardinality': ':db.cardinality/one',
       ':db/unique': ':db.unique/identity'
@@ -60,10 +61,9 @@ describe('feathers-datascript', () => {
     });
   });
 
-  it('basic functionality', done => {
-    console.log(expect);
-    expect(typeof 1).to.equal('number');
-    done();
-  });
+  // it('basic functionality', done => {
+  //   expect(typeof 1).to.equal('number');
+  //   done();
+  // });
   // baseTests(people, _ids, errors.types);
 });
