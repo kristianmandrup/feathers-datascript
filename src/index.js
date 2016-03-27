@@ -72,8 +72,9 @@ export default class PersonService {
     var query = buildQuery(params.query);
 
     // Start with finding all, and limit when necessary.
-    var result = this._q(query);
-    return this._resultFor(result);
+    return this._q(query).then(result => {
+      return this._resultFor(result);
+    });
   }
 
   // retrieves a single resource with the given id from the service.
@@ -82,7 +83,9 @@ export default class PersonService {
     var query = new Query(params).build();
 
     // what do params do here?
-    return this._resultFor(this._q(query));
+    return this._q(query).then(result => {
+      return this._resultFor(result);
+    });
   }
 
   get id() {
@@ -110,7 +113,7 @@ export default class PersonService {
       var transactData = _.merge({[this.id]: nextId}, data);
       var statement = this.addEntity(transactData);
       // this._log('create statement', statement);
-      this._transact(statement).then(result => {
+      return this._transact(statement).then(result => {
         return this._resultFor(transactData);
       });
     });
@@ -123,7 +126,7 @@ export default class PersonService {
   // between partial and full updates and support the PATCH HTTP method.
   patch(id, data, params) {
     var statement = this.updateEntity(id, data);
-    this._transact(statement).then(result => {
+    return this._transact(statement).then(result => {
       return this._resultFor(result.db_after);
     });
   }
@@ -139,7 +142,7 @@ export default class PersonService {
       remove: this.removeEntity(id)
     };
     var transactions = [statements.remove, statements.add];
-    this._transact(transactions).then(result => {
+    return this._transact(transactions).then(result => {
       return this._resultFor(result.db_after);
     });
   }
@@ -153,7 +156,7 @@ export default class PersonService {
       throw 'remove requires a numeric id';
     }
     var statement = this.removeEntity(id);
-    this._transact(statement).then(result => {
+    return this._transact(statement).then(result => {
       return this._resultFor(result.db_after);
     });
   }
