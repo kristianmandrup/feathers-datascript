@@ -38,9 +38,17 @@ describe('Select Only', () => {
       '?name'
     ];
 
-    expectIncluded(only._findAttrs(), findAttrs);
-    expectIncluded(only._ins(), ins);
-    expectIncluded(only._whereClauses(), whereClauses);
+    let query = {
+      ':find': findAttrs,
+      ':ins': ins,
+      ':where': whereClauses
+    };
+
+    expectIncluded(only._find(), findAttrs);
+    expectIncluded(only._in(), ins);
+    expectIncluded(only._where(), whereClauses);
+
+    expect(only.build()).to.eql(query);
     done();
   });
 });

@@ -8,6 +8,22 @@ export default class Eq extends Base {
   }
 
   build() {
-    return `[?eid ?${this.name} ${this.value}]`;
+    return {
+      ':where': this._where()
+    };
+  }
+
+  _where() {
+    return `[?eid ?${this.name} ${this._val}]`;
+  }
+
+
+  get _val() {
+    switch (typeof this.value) {
+      case 'string':
+        return `'${this.value}'`;
+      default:
+        return `${this.value}`;
+    }
   }
 }

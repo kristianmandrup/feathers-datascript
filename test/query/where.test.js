@@ -2,7 +2,7 @@ import chai from 'chai';
 
 let expect = chai.expect;
 
-describe('feathers-datascript', () => {
+describe('Where', () => {
   // before(clean);
   // after(clean);
 
@@ -14,7 +14,7 @@ describe('feathers-datascript', () => {
     done();
   });
 
-  it('basic functionality', done => {
+  it('number', done => {
     expect(typeof 1).to.equal('number');
     done();
   });
