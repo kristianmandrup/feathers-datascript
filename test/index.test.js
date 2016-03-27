@@ -5,6 +5,7 @@ import Service from '../src';
 // import { datascript as d } from 'datascript';
 // import { Datomic } from 'datomic';
 
+let people;
 let expect = chai.expect;
 let _ids = {};
 let options = {
@@ -21,18 +22,14 @@ let options = {
     }
   }
 };
-let people;
 
 function createPeople() {
   return new Service('people', options);
 }
 
 function clean(done) {
-  createPeople().then((service) =>{
-    people = service;
-    console.log('people Service ready', service);
-    done();
-  });
+  people = createPeople();
+  done();
 }
 
 describe('feathers-datascript', () => {
@@ -41,33 +38,37 @@ describe('feathers-datascript', () => {
   after(clean);
 
   beforeEach(done => {
-    console.log('creating people');
+    console.log('creating people:', people);
     people.create({
       ':person/email': 'douglas.adams@gmail.com',
       ':person/name': 'Doug',
       ':person/age': 42
-    }, {}).then((error, data) => {
-      console.log('People created', data);
-      if (error) {
-        console.error(error);
-        throw 'people create error';
-      }
-      console.log('person Doug created, id:', data.id);
-      _ids.Doug = data.id;
+    }, {}).then(data => {
+      // if (error) {
+      //   console.error(error);
+      //   throw 'people create error';
+      // }
+      var id = data[':person/id'];
+
+      console.log('People created with data:', data);
+      console.log('person Doug created, id:', id);
+      _ids.Doug = id;
       done();
+    }).catch(err => {
+      console.error(err);
+      throw 'People create error';
     });
   });
 
   afterEach(done => {
     console.log('after: remove doug ', _ids.Doug);
     people.remove(_ids.Doug, {})
-    .then((error) => {
-      console.log('people removed?');
-      if (error) {
-        console.error(error);
-        throw 'people create error';
-      }
+    .then((data) => {
+      console.log('people removed', data);
       done();
+    }).catch(err => {
+      console.error(err);
+      throw 'People remove error';
     });
   });
 

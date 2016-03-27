@@ -41,8 +41,6 @@ export default class PersonService {
 
     // TODO: handle failed connections.
     this.adapter = this.adapter || this.createAdapter(options);
-    console.log('Adapter created');
-    return Promise.resolve(this.adapter);
   }
 
   get db() {
@@ -62,9 +60,9 @@ export default class PersonService {
     return this.adapter.q(query, this.db);
   }
 
-  _transact(connection, statement) {
+  _transact(statement) {
     this._log('transact');
-    return this.adapter.transact(this.connection, statement);
+    return this.adapter.transact(statement);
   }
 
   // retrieves a list of all resources from the service.
@@ -100,11 +98,13 @@ export default class PersonService {
     const maxId = this._q(findMaxId);
     console.log('max person id', maxId);
     var nextId = maxId.length ? maxId + 1 : 0;
-    var statement = _.merge({':db/add': -1, ':person/id': nextId}, data);
+    console.log('create', nextId);
+    var transactData = _.merge({':person/id': nextId}, data);
+    var statement = _.merge({':db/add': -1}, transactData);
     this._log('create statement', statement);
     var result = this._transact(statement);
     console.log('created', result.db_after);
-    return Promise.resolve({id: nextId});
+    return Promise.resolve(transactData);
   }
 
   // merges the existing data of the resource identified by id with the new data.
@@ -139,13 +139,11 @@ export default class PersonService {
   // multiple resources.
   remove(id) {
     console.log('remove', id);
-    if (!id) {
-      throw 'remove requires id';
+    if (isNaN(id)) {
+      throw 'remove requires a numeric id';
     }
-    if (id) {
-      var result = this._transact({':db/retractEntity': id});
-      return Promise.resolve(result.db_after);
-    }
+    var result = this._transact({':db.fn/retractEntity': id});
+    return Promise.resolve(result.tx_data);
   }
 
   setup(app) {

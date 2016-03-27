@@ -2,6 +2,20 @@ import { default as d } from 'datascript';
 // import edn from 'jsedn';
 // import util from 'util';
 
+function toArray(obj) {
+  console.log('toArray', obj);
+  if (obj.length) {
+    return obj; // already an array
+  }
+  const keys = Object.keys(obj);
+  var arr = keys.reduce((prev, key) => {
+    console.log('concat', prev, key);
+    return prev.concat([key, obj[key]]);
+  }, []);
+  console.log('arr', arr);
+  return arr;
+}
+
 export default class DataScriptAdapter {
   constructor(options = {}) {
     console.log('creating DataScriptAdapter');
@@ -34,13 +48,16 @@ export default class DataScriptAdapter {
   }
 
   // do we need a callback?
-  transact(connection, statement) {
+  transact(statement) {
     if (!statement.length) {
       statement = [statement];
+      statement = statement.map(transaction => {
+        return toArray(transaction);
+      });
     }
 
     this._log('transact', statement);
-    return d.transact(connection, statement);
+    return d.transact(this.connection, statement);
   }
 }
 
