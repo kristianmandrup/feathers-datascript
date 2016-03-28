@@ -21,10 +21,10 @@ export default class Builder {
 
   _extract(predicate) {
     var key = Object.keys(predicate)[0];
-    var value = predicate[key];
+    this.value = predicate[key];
     return {
       key: key.replace('$', ''),
-      value: value
+      value: this.value
     };
   }
 
@@ -37,9 +37,11 @@ export default class Builder {
     };
   }
 
-  build() {
+  build(where) {
+    this.setValue = where.setValue.bind(where);
     var clazz = this.type();
     var inst = clazz.create(this.name, this.predicate);
+    this.setValue(this.value);
     return inst.where;
   }
 
@@ -54,7 +56,7 @@ Builder.create = (name, predicate) => {
     var pred = name[attr];
     var key = Object.keys(pred)[0];
     var value = pred[key];
-
-    return Builder.create(name, {[key]: value});
+    predicate = {[key]: value};
   }
+  return new Builder(name, predicate);
 };

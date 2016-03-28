@@ -8,11 +8,16 @@ export default class Where {
     }
     // console.log('where params', params);
     this.params = params;
+    this.values = [];
+  }
+
+  setValue(param) {
+    this.values.push(param);
   }
 
   build() {
     return this.params.map(param => {
-      return new Builder(...param).build();
+      return Builder.create(...param).build(this);
     });
   }
 }

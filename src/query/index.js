@@ -9,14 +9,22 @@ export default class Query {
   // not in - {name: {$nin: ['alice', 'wonder']}}
   constructor(q) {
     this.q = q;
+    this._where = new Where(this.q);
   }
 
   build() {
     return {
-      ':find': this.find,
-      ':in': this.ins,
-      ':where': this.where
+      query: {
+        ':find': this.find,
+        ':in': this.ins,
+        ':where': this.where
+      },
+      params: this.paramValues
     };
+  }
+
+  get paramValues() {
+    return this._where.values;
   }
 
   get find() {
@@ -28,6 +36,6 @@ export default class Query {
   }
 
   get where() {
-    return new Where(this.q).build();
+    return this._where.build();
   }
 }
