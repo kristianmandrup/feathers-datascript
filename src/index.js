@@ -1,12 +1,8 @@
 // import filter from 'feathers-query-filters';
-import Query from './query';
+import QueryBuilder from './query_builder';
 import { DataScriptAdapter } from './adapter';
 // import { types as errors } from 'feathers-errors';
 import _ from 'lodash';
-
-function buildQuery(q) {
-  return new Query(q).build();
-}
 
 function createAdapter(options) {
   return new DataScriptAdapter(options);
@@ -35,6 +31,11 @@ export default class PersonService {
     // TODO: handle failed connections.
     this.adapter = this.adapter || this.createAdapter(options);
     this.type = this.adapter.name;
+    this.queryBuilder = new QueryBuilder(this.entityName);
+  }
+
+  get entityName() {
+    return this.constructor.name.replace(/Service$/, '');
   }
 
   get db() {
@@ -69,7 +70,7 @@ export default class PersonService {
     if (!params.query) {
       throw 'params missing :query option';
     }
-    var query = buildQuery(params.query);
+    var query = this.queryBuilder.query(params.query);
 
     // Start with finding all, and limit when necessary.
     return this._q(query).then(result => {
@@ -80,7 +81,7 @@ export default class PersonService {
   // retrieves a single resource with the given id from the service.
   get(id, params) {
     params.$id = id;
-    var query = new Query(params).build();
+    var query = this.queryBuilder.byId('person', {id: id});
 
     // what do params do here?
     return this._q(query).then(result => {

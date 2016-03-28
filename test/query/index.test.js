@@ -15,7 +15,7 @@ describe('Query', () => {
     done();
   });
 
-  let query = new Query({
+  let query = new Query('person', {
     name: 'kris',
     age: {$gt: 32}
   });

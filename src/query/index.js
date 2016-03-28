@@ -7,7 +7,8 @@ export default class Query {
   // {name: 'alice'}
   // in - {name: {$in: ['alice', 'wonder']}}
   // not in - {name: {$nin: ['alice', 'wonder']}}
-  constructor(q) {
+  constructor(entityClass, q) {
+    this.entityClass = entityClass;
     this.q = q;
     this._where = new Where(this.q);
   }
