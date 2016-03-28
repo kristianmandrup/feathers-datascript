@@ -12,6 +12,10 @@ export default class Where {
   }
 
   setValue(param) {
+    // ignore Object values
+    if (typeof param === 'object') {
+      return;
+    }
     this.values.push(param);
   }
 

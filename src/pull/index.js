@@ -62,7 +62,10 @@
 // Fetch all Todos:  db.pull("[*]", [:todo/id 123]);
 
 export default class Pull {
-  constructor(params) {
+  constructor(entityClass, params) {
+    this.entityClass = entityClass;
+    this.idKey = Object.keys(params)[0];
+    this.value = params[this.idKey];
     this.params = params;
   }
 
@@ -77,8 +80,22 @@ export default class Pull {
     };
   }
 
+  get entities() {
+    return [this.entityLookupRef];
+  }
+
+  get entityLookupRef() {
+    return {[this.lookupRefName]: this.value};
+  }
+
+  get lookupRefName() {
+    return `:${this.entityClass}/id`;
+  }
+
   build() {
-    return [
-    ];
+    return {
+      pattern: ['*'],
+      entities: this.entities
+    };
   }
 }

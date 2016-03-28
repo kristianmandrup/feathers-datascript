@@ -3,8 +3,9 @@ import Base from './base';
 import Builder from '../builder';
 
 export default class Or extends Base {
-  constructor(obj) {
+  constructor(obj, where) {
     super();
+    this._where = where;
     if (!obj.$or) {
       console.error(obj);
       throw 'Or must be an object with an $or key';
@@ -26,7 +27,7 @@ export default class Or extends Base {
   }
 
   get where() {
-    console.log('clauses', this.clauses);
+    // console.log('clauses', this.clauses);
     return `(or ${this.clauses.join(' ')})`;
   }
 
@@ -37,11 +38,11 @@ export default class Or extends Base {
   }
 
   clause(obj) {
-    console.log('clause for', obj);
-    return new Builder(...obj).build();
+    // console.log('clause for', obj);
+    return Builder.create(...obj).build(this._where);
   }
 }
 
-Or.create = (obj) => {
-  return new Or(obj);
+Or.create = (obj, where) => {
+  return new Or(obj, where);
 };

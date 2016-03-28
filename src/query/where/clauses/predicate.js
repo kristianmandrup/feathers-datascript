@@ -53,6 +53,13 @@ export default class Predicate extends Base {
   }
 }
 
-Predicate.create = (name, predicate) => {
-  return new Predicate(name, predicate);
+Predicate.create = (name, predicate, where) => {
+  var pred;
+  if (typeof name === 'object') {
+    var key = Object.keys(name)[0];
+    where = predicate;
+    pred = name[key];
+    name = key;
+  }
+  return new Predicate(name, pred || predicate, where);
 };

@@ -1,3 +1,4 @@
+import Pull from '../../src/pull';
 import chai from 'chai';
 
 let expect = chai.expect;
@@ -15,7 +16,11 @@ describe('Pull', () => {
   });
 
   it('pull', done => {
-    expect(typeof 1).to.equal('number');
+    let pull = new Pull('person', {id: 27});
+    expect(pull.build()).to.eql({
+      pattern: ['*'],
+      entities: [{':person/id': 27}]
+    });
     done();
   });
 });

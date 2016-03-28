@@ -29,7 +29,7 @@ export default class Id extends Base {
   }
 
   get where() {
-    return `[?eid ${this._entityIdAttr()} ?id]`;
+    return `[?e ${this._entityIdAttr()} ?id]`;
   }
 
   _entityIdAttr() {

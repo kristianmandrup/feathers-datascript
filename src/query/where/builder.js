@@ -37,10 +37,12 @@ export default class Builder {
     };
   }
 
+  // TODO: fix clazz.create, should always pass (object, where)
   build(where) {
     this.setValue = where.setValue.bind(where);
     var clazz = this.type();
-    var inst = clazz.create(this.name, this.predicate);
+    var obj = {[this.name]: this.predicate};
+    var inst = clazz.create(obj, where);
     this.setValue(this.value);
     return inst.where;
   }
