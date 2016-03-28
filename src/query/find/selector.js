@@ -8,7 +8,18 @@ export default class Selector {
   }
 
   get attrs() {
-    return this.params.$select || [];
+    if (this.params.$select) {
+      return this.params.$select;
+    }
+    if (Array.isArray(this.params)) {
+      return this.params.map(param => {
+        return Object.keys(param)[0];
+      });
+    }
+    if (typeof this.params === 'object') {
+      return Object.keys(this.params);
+    }
+    return [];
   }
 
   get type() {

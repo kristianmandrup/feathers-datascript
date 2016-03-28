@@ -14,3 +14,9 @@ export function toTupleList(obj) {
     return [key, obj[key]];
   });
 }
+
+export function toTupleObjList(obj) {
+  return Object.keys(obj).map(key => {
+    return {[key]: obj[key]};
+  });
+}

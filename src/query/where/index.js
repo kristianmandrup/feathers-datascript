@@ -6,13 +6,13 @@ export default class Where {
     if (typeof params === 'object') {
       params = toTupleList(params);
     }
-    console.log('where params', params);
+    // console.log('where params', params);
     this.params = params;
   }
 
   build() {
     return this.params.map(param => {
-      return new Builder(param).build();
+      return new Builder(...param).build();
     });
   }
 }

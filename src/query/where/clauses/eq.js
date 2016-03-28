@@ -14,7 +14,15 @@ export default class Eq extends Base {
   }
 
   get where() {
-    return `[?eid ?${this.name} ${this._val}]`;
+    return `[${this.clause}]`;
+  }
+
+  get clause() {
+    return `?e ?${this.name} ${this._nameVal}`;
+  }
+
+  get _nameVal() {
+    return `?${this.name}-value`;
   }
 
   get _val() {

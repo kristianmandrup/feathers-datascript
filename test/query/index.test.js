@@ -15,20 +15,48 @@ describe('Query', () => {
     done();
   });
 
-  it('build', done => {
-    let query = new Query({
-      name: 'kris',
-      age: {$gt: 32}
-    });
+  let query = new Query({
+    name: 'kris',
+    age: {$gt: 32}
+  });
+  let q = query.build();
 
+  let whereClauses = [
+      '[?e ?name ?name-value]',
+      '[(> ?e ?age ?age-value)]'
+  ];
+
+  let expected = {
+    ':find': `?name-value ?age-value`,
+    ':in': `?name-value ?age-value`,
+    ':where': whereClauses
+  };
+
+  it('builds :find clause', done => {
     // ':find': '?name-value ?age-value',
     // ':in': '$ ?name ?age',
-    let q = query.build()[':where'];
+    expect(q[':find']).to.eql(expected[':find']);
+    done();
+  });
 
-    expect(q).to.equal([
-        '[?e ?name ?name-value]',
-        '[?e ?age ?age-value]'
-    ]);
+  it('builds :in clause', done => {
+    // ':find': '?name-value ?age-value',
+    // ':in': '$ ?name ?age',
+    expect(q[':in']).to.eql(expected[':in']);
+    done();
+  });
+
+  it('builds :where clause', done => {
+    // ':find': '?name-value ?age-value',
+    // ':in': '$ ?name ?age',
+    expect(q[':where']).to.eql(expected[':where']);
+    done();
+  });
+
+  it('builds full query', done => {
+    // ':find': '?name-value ?age-value',
+    // ':in': '$ ?name ?age',
+    expect(q).to.eql(expected);
     done();
   });
 });

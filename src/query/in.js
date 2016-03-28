@@ -1,4 +1,4 @@
-import util from '../util';
+import { toTupleObjList } from '../util';
 
 export default class In {
   // 'name', 'age'
@@ -7,8 +7,9 @@ export default class In {
   // not in - {name: {$nin: ['alice', 'wonder']}}
   constructor(params) {
     if (typeof params === 'object') {
-      params = util.toArray(params);
+      params = toTupleObjList(params);
     }
+    // console.log('params', params);
     this.params = params;
   }
 
@@ -16,19 +17,21 @@ export default class In {
     if (!this.params || this.params.length === 0) {
       return {};
     }
-    return {
-      ':in': `${this._params}`
-    };
+    return `${this.clause}`;
   }
 
-  get _params() {
+  get clause() {
     return this.params.map(param => {
       return this._value(param);
     }).join(' ');
   }
 
   _value(param) {
-    return (typeof param === 'object') ? this._objValue(param) : `?${param}`;
+    return (typeof param === 'object') ? this._objValue(param) : `?${this._format(param)}`;
+  }
+
+  _format(name) {
+    return `${name}-value`;
   }
 
   // ie. {name: {$in: ['alice', 'wonder']}}
@@ -37,8 +40,8 @@ export default class In {
     var value = param[key];
     // get value
     if (value.$in || value.$nin) {
-      return `[?${key} ...]`;
+      return `[?${this._format(key)} ...]`;
     }
-    return '';
+    return `?${this._format(key)}`;
   }
 }

@@ -13,8 +13,8 @@ export default class Query {
 
   build() {
     return {
-      // ':find': this.find,
-      // ':in': this.ins,
+      ':find': this.find,
+      ':in': this.ins,
       ':where': this.where
     };
   }

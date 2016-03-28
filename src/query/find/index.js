@@ -15,21 +15,21 @@
 //  [?p :entity/person ?type]
 //  [?p ?attr ?a]
 
-import util from '../../util';
+import { toTupleObjList } from '../../util';
 import Only from './only';
 import Selector from './selector';
 
 export default class Find {
   constructor(params) {
     if (typeof params === 'object') {
-      params = util.toArray(params);
+      params = toTupleObjList(params);
     }
     this.params = params;
     this.selector = new Selector(this.params);
   }
 
   build() {
-    return this[this.selector.type]();
+    return this[this.selector.type]().join(' ');
   }
 
   // for $select: '*'
@@ -50,6 +50,6 @@ export default class Find {
   // }
 
   only() {
-    return new Only(this.selector.attrs).build();
+    return new Only(this.selector.attrs).build()[':find'];
   }
 }

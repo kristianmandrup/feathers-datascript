@@ -49,7 +49,7 @@ export default class Predicate extends Base {
       return builder.where;
     }
     var eq = new Eq(this.name, this.value);
-    return eq.where;
+    return eq.clause;
   }
 }
 
