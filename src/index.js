@@ -1,5 +1,5 @@
 // import filter from 'feathers-query-filters';
-import Query from './Query';
+import Query from './query';
 import { DataScriptAdapter } from './adapter';
 // import { types as errors } from 'feathers-errors';
 import _ from 'lodash';
