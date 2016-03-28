@@ -9,11 +9,11 @@ export default class Eq extends Base {
 
   build() {
     return {
-      ':where': this._where
+      ':where': this.where
     };
   }
 
-  get _where() {
+  get where() {
     return `[?eid ?${this.name} ${this._val}]`;
   }
 

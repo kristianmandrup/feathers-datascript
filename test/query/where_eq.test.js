@@ -17,7 +17,7 @@ describe('Eq', () => {
 
   it('name == "kris"', done => {
     let eq = new Eq('name', 'kris');
-    expect(eq._where).to.eql(`[?eid ?name 'kris']`);
+    expect(eq.where).to.eql(`[?eid ?name 'kris']`);
     expect(eq.build()).to.eql({
       ':where': `[?eid ?name 'kris']`
     });

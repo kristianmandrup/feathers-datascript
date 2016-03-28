@@ -34,7 +34,7 @@ describe('Id', () => {
 
     expect(id._find).to.eql(inId);
     expect(id._in).to.eql(inId);
-    expect(id._where).to.eql(whereClause);
+    expect(id.where).to.eql(whereClause);
     expect(id.build()).to.eql(query);
     done();
   });

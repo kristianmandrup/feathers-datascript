@@ -16,7 +16,7 @@ export default class Id extends Base {
     return {
       ':find': this._find,
       ':in': this._in,
-      ':where': this._where
+      ':where': this.where
     };
   }
 
@@ -28,7 +28,7 @@ export default class Id extends Base {
     return ['?id'];
   }
 
-  get _where() {
+  get where() {
     return `[?eid ${this._entityIdAttr()} ?id]`;
   }
 

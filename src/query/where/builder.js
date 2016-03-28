@@ -9,6 +9,7 @@ export default class Builder {
     this.name = name;
     this.predicate = predicate;
     this.pred = this._extract(predicate);
+    console.log('pred', this.pred);
   }
 
   _extract(predicate) {
@@ -32,7 +33,8 @@ export default class Builder {
   build() {
     var clazz = this.type();
     var inst = clazz.create(this.name, this.predicate);
-    return inst.build();
+    console.log('inst', inst);
+    return inst.where;
   }
 
   type() {

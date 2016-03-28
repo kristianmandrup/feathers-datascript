@@ -15,11 +15,11 @@ export default class Or extends Base {
   //   {$or: [{name: {'$ne': 'Alice'}, {age: {'$gte': 21}]}
   build() {
     return {
-      ':where': this._where
+      ':where': this.where
     };
   }
 
-  get _where() {
+  get where() {
     return `(or ${this.clauses()})`;
   }
 

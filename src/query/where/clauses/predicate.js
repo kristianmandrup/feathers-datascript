@@ -31,18 +31,18 @@ export default class Predicate extends Base {
 
   build() {
     return {
-      ':where': this._where
+      ':where': this.where
     };
   }
 
-  get _where() {
+  get where() {
     return `[(${this.outputPredicate} ${this.clause})]`;
   }
 
   get clause() {
     if (typeof this.value === 'object') {
       var builder = Builder.create(this.name, this.value);
-      return builder._where;
+      return builder.where;
     }
     var eq = new Eq(this.name, this.value);
     return eq._where;

@@ -16,17 +16,21 @@ describe('Predicate', () => {
     done();
   });
 
-  it('Builder: > 32', done => {
-    let builder = new Builder('age', {$gt: 32});
-    expect(builder.build()[':where']).to.eql(`[(> [?eid ?age 32])]`);
+  it('age > 32', done => {
+    let pred = new Predicate('age', {$gt: 32});
+    expect(pred.build()).to.eql(`[(> [?eid ?age 32])]`);
     done();
   });
 
-  // it('age > 32', done => {
-  //   let pred = new Predicate('age', {$gt: 32});
-  //   expect(pred._where).to.eql(`[(> ?eid ?age 32)]`);
-  //   // expect(pred.build()).to.eql(`[?eid ?name 'kris']`);
-  //   done();
-  // });
+  it('age < 32', done => {
+    let pred = new Predicate('age', {$lt: 32});
+    expect(pred.build()).to.eql(`[(< [?eid ?age 32])]`);
+    done();
+  });
 
+  it('age == 32', done => {
+    let pred = new Predicate('age', {$eq: 32});
+    expect(pred.build()).to.eql(`[?eid ?age 32]]`);
+    done();
+  });
 });
