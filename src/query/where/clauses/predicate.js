@@ -20,6 +20,7 @@ export default class Predicate extends Base {
   constructor(name, predicate) {
     super(name);
     var key = Object.keys(predicate)[0];
+    this.key = key;
     this.value = predicate[key];
     this.predicate = predicate;
     this.outputPredicate = this.predicateMap[key];
@@ -36,6 +37,9 @@ export default class Predicate extends Base {
   }
 
   get where() {
+    if (this.key === '$eq') {
+      return this.clause;
+    }
     return `[(${this.outputPredicate} ${this.clause})]`;
   }
 
@@ -45,7 +49,7 @@ export default class Predicate extends Base {
       return builder.where;
     }
     var eq = new Eq(this.name, this.value);
-    return eq._where;
+    return eq.where;
   }
 }
 

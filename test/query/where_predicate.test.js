@@ -18,19 +18,22 @@ describe('Predicate', () => {
 
   it('age > 32', done => {
     let pred = new Predicate('age', {$gt: 32});
-    expect(pred.build()).to.eql(`[(> [?eid ?age 32])]`);
+    let exp = pred.build()[':where'];
+    expect(exp).to.eql(`[(> [?eid ?age 32])]`);
     done();
   });
 
   it('age < 32', done => {
     let pred = new Predicate('age', {$lt: 32});
-    expect(pred.build()).to.eql(`[(< [?eid ?age 32])]`);
+    let exp = pred.build()[':where'];
+    expect(exp).to.eql(`[(< [?eid ?age 32])]`);
     done();
   });
 
   it('age == 32', done => {
     let pred = new Predicate('age', {$eq: 32});
-    expect(pred.build()).to.eql(`[?eid ?age 32]]`);
+    let exp = pred.build()[':where'];
+    expect(exp).to.eql(`[?eid ?age 32]`);
     done();
   });
 });
