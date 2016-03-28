@@ -50,8 +50,8 @@ export default class PersonService {
     console.log('Service', ...args);
   }
 
-  _q(query) {
-    this._log('transact', query);
+  _q(query, qParams) {
+    this._log('transact', query, qParams);
     return this.adapter.q(query, this.db);
   }
 
@@ -70,10 +70,12 @@ export default class PersonService {
     if (!params.query) {
       throw 'params missing :query option';
     }
-    var query = this.queryBuilder.query(params.query);
+    var res = this.queryBuilder.query(params.query);
 
-    // Start with finding all, and limit when necessary.
-    return this._q(query).then(result => {
+    // pass attribute names, and values as params to query
+    var qParams = _.zip(res.params.names, res.params.values);
+
+    return this._q(res.query, qParams).then(result => {
       return this._resultFor(result);
     });
   }

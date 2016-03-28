@@ -37,6 +37,8 @@ describe('Query', () => {
       ':where': whereClauses
     };
     expect(q).to.eql(expected);
+    expect(params.values).to.eql(['kris', 32]);
+    expect(params.names).to.eql(['name', 'age']);
     done();
   });
 

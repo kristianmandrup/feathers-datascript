@@ -20,17 +20,11 @@ export default class Query {
         ':in': this.ins,
         ':where': this.where
       },
-      params: this.paramValues,
-      paramNames: this.paramNames
+      params: {
+        values: this._where.values,
+        names: this._where.names
+      }
     };
-  }
-
-  get paramNames() {
-    return this._where.names;
-  }
-
-  get paramValues() {
-    return this._where.values;
   }
 
   get find() {

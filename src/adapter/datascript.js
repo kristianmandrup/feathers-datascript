@@ -9,7 +9,6 @@ export default class DataScriptAdapter extends BaseAdapter {
     this.db = this.createEmptyDb();
     this.connection = this.createConnection();
     this.addListeners();
-
   }
 
   createEmptyDb() {
@@ -24,8 +23,8 @@ export default class DataScriptAdapter extends BaseAdapter {
     return this.driver.pull(query, this.db);
   }
 
-  performQuery(query) {
-    return this.driver.q(query, this.db);
+  performQuery(query, params) {
+    return this.driver.q(query, this.db, params || []);
   }
 
   performTransaction(statement) {
