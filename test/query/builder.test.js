@@ -15,21 +15,30 @@ describe('Builder', () => {
     done();
   });
 
-  it('Builder: > 32', done => {
-    let builder = new Builder('age', {$gt: 32});
-    expect(builder.build()).to.eql(`[(> [?eid ?age 32])]`);
-    done();
-  });
+  // it('Builder: > 32', done => {
+  //   let builder = new Builder('age', {$gt: 32});
+  //   expect(builder.build()).to.eql(`[(> [?e ?age 32])]`);
+  //   done();
+  // });
+  //
+  // it('Builder: < 32', done => {
+  //   let builder = new Builder('age', {$lt: 32});
+  //   expect(builder.build()).to.eql(`[(< [?e ?age 32])]`);
+  //   done();
+  // });
+  //
+  // it('Builder: = 32', done => {
+  //   let builder = new Builder('age', {$eq: 32});
+  //   expect(builder.build()).to.eql(`[?e ?age 32]]`);
+  //   done();
+  // });
 
-  it('Builder: < 32', done => {
-    let builder = new Builder('age', {$lt: 32});
-    expect(builder.build()).to.eql(`[(< [?eid ?age 32])]`);
-    done();
-  });
-
-  it('Builder: = 32', done => {
-    let builder = new Builder('age', {$eq: 32});
-    expect(builder.build()).to.eql(`[?eid ?age 32]]`);
+  it('Builder: name == Alex or gender == female', done => {
+    let builder = Builder.create({$or: [
+      { name: 'Alex' },
+      { gender: 'female' }
+    ]});
+    expect(builder.build()).to.eql('(or [?e ?name ?name-value] [?e ?gender ?gender-value])');
     done();
   });
 });

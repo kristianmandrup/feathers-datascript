@@ -9,6 +9,7 @@ export default class Where {
     // console.log('where params', params);
     this.params = params;
     this.values = [];
+    this.names = [];
   }
 
   setValue(param) {
@@ -17,6 +18,14 @@ export default class Where {
       return;
     }
     this.values.push(param);
+  }
+
+  setName(name) {
+    // ignore non string values
+    if (typeof name !== 'string') {
+      return;
+    }
+    this.names.push(name);
   }
 
   build() {

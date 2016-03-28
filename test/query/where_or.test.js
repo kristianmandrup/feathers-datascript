@@ -16,11 +16,11 @@ describe('Or', () => {
   });
 
   it('name == "kris" or age > 32', done => {
-    let or = new Or({$or: {
-      name: 'kris',
-      age: {$gt: 32}
-    }});
-    let expected = `(or [?eid ?name 'kris'] [(> [?eid ?age 32])])`;
+    let or = new Or({$or: [
+      {name: 'kris',},
+      {age: {$gt: 32}},
+    ]});
+    let expected = `(or [?e ?name ?name-value] [(> ?e ?age ?age-value)])`;
 
     expect(or.where).to.eql(expected);
     // expect(or.build()).to.eql({

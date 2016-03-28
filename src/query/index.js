@@ -20,8 +20,13 @@ export default class Query {
         ':in': this.ins,
         ':where': this.where
       },
-      params: this.paramValues
+      params: this.paramValues,
+      paramNames: this.paramNames
     };
+  }
+
+  get paramNames() {
+    return this._where.names;
   }
 
   get paramValues() {

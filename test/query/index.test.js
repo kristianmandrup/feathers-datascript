@@ -17,20 +17,33 @@ describe('Query', () => {
 
   let query = new Query('person', {
     name: 'kris',
-    age: {$gt: 32}
+    age: {$gt: 32},
+    status: {$in: ['single', 'divorced']},
+    role: {$nin: ['slave']},
+    $or: [
+      { name: 'Alice' },
+      { name: 'Bob' }
+    ]
   });
   let built = query.build();
   let q = built.query;
   let params = built.params;
+  let paramNames = built.paramNames;
 
   let whereClauses = [
       '[?e ?name ?name-value]',
-      '[(> ?e ?age ?age-value)]'
+      '[(> ?e ?age ?age-value)]',
+      '[?e ?status ?status-value]',
+      '(not [?e ?role ?role-value])',
+      '(or [?e ?name ?name-value-1] [?e ?name ?name-value-2])'
   ];
 
   let expected = {
-    ':find': `?name-value ?age-value`,
-    ':in': `?name-value ?age-value`,
+    // FIX: do we want status-value in find?
+    // TODO: should we discard :find and use pull?
+    // or at least have this option?
+    ':find': `?name-value ?age-value ?status-value ?role-value`,
+    ':in': `?name-value ?age-value [?status-value ...] [?role-value ...]`,
     ':where': whereClauses
   };
 
@@ -59,6 +72,13 @@ describe('Query', () => {
     // ':find': '?name-value ?age-value',
     // ':in': '$ ?name ?age',
     expect(params).to.eql(['kris', 32]);
+    done();
+  });
+
+  it('builds param names', done => {
+    // ':find': '?name-value ?age-value',
+    // ':in': '$ ?name ?age',
+    expect(paramNames).to.eql(['name', 'age', 'status', 'role']);
     done();
   });
 

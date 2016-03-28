@@ -11,7 +11,7 @@ export default class Or extends Base {
       throw 'Or must be an object with an $or key';
     }
     // group each key/value into a list
-    this.list = toTupleList(obj.$or);
+    this.list = obj.$or;
   }
 
   // $or: or (either)
@@ -38,8 +38,7 @@ export default class Or extends Base {
   }
 
   clause(obj) {
-    // console.log('clause for', obj);
-    return Builder.create(...obj).build(this._where);
+    return Builder.create(obj).build(this._where);
   }
 }
 

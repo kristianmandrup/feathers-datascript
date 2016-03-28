@@ -1,4 +1,4 @@
-import { Id, Eq, Or, Predicate } from './clauses';
+import { Id, NotEq, Eq, Or, Predicate } from './clauses';
 import { predicateMap } from './clauses/predicate';
 
 export default class Builder {
@@ -20,6 +20,12 @@ export default class Builder {
   }
 
   _extract(predicate) {
+    if (Array.isArray(predicate)) {
+      return {
+        key: 'or',
+        value: predicate
+      };
+    }
     var key = Object.keys(predicate)[0];
     this.value = predicate[key];
     return {
@@ -32,6 +38,8 @@ export default class Builder {
     return {
       id: Id,
       eq: Eq,
+      'in': Eq,
+      nin: NotEq,
       or: Or,
       predicate: Predicate
     };
@@ -39,15 +47,20 @@ export default class Builder {
 
   // TODO: fix clazz.create, should always pass (object, where)
   build(where) {
-    this.setValue = where.setValue.bind(where);
-    var clazz = this.type();
+    if (where) {
+      this.setValue = where.setValue.bind(where);
+      this.setName = where.setName.bind(where);
+      this.setValue(this.value);
+      this.setName(this.name);
+    }
+    var clazz = this.type;
     var obj = {[this.name]: this.predicate};
     var inst = clazz.create(obj, where);
-    this.setValue(this.value);
+
     return inst.where;
   }
 
-  type() {
+  get type() {
     return this.clause[this.pred.key] || this.clause.predicate;
   }
 }

@@ -13,7 +13,9 @@ export default class Only {
   }
 
   get _find() {
-    return this.attrs.map(name => `?${name}-value`);
+    return this.attrs.map(name => {
+      return `?${name}-value`;
+    });
   }
 
   get _in() {
