@@ -3,13 +3,20 @@ import { predicateMap } from './clauses/predicate';
 
 export default class Builder {
   constructor(name, predicate) {
+    console.log('build', name, predicate);
+    if (typeof name === 'object') {
+      var key = Object.keys(name)[0];
+      predicate = name[key];
+      name = key;
+    }
+
     if (typeof predicate !== 'object') {
       predicate = {'eq': predicate};
     }
     this.name = name;
     this.predicate = predicate;
     this.pred = this._extract(predicate);
-    console.log('pred', this.pred);
+    console.log('pred', this.name, this.pred);
   }
 
   _extract(predicate) {

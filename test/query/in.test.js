@@ -16,9 +16,28 @@ describe('In', () => {
   });
 
   it('empty in', done => {
-    let ins = new In();
+    let ins = new In([]);
     expect(ins).to.be.an.instanceof(In);
-    expect(ins.build()).to.eql([]);
+    expect(ins.build()).to.eql({});
+    done();
+  });
+
+  it('in email, name', done => {
+    let ins = new In(['name', 'email']);
+    expect(ins).to.be.an.instanceof(In);
+    expect(ins.build()).to.eql({
+      ':in': `?name ?email`
+    });
+    done();
+  });
+
+  it('in status list, name', done => {
+    let status = {status: {$in: ['single', 'divorced']}};
+    let ins = new In([status, 'name']);
+    expect(ins).to.be.an.instanceof(In);
+    expect(ins.build()).to.eql({
+      ':in': `[?status ...] ?name`
+    });
     done();
   });
 });

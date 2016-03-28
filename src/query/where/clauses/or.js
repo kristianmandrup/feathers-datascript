@@ -4,7 +4,15 @@ import Builder from '../builder';
 export default class Or extends Base {
   constructor(obj) {
     super();
-    this.list = obj.$or;
+    if (!obj.$or) {
+      console.error(obj);
+      throw 'Or must be an object with an $or key';
+    }
+    // group each key/value into a list
+
+    this.list = Object.keys(obj.$or).map(key => {
+      return [key, obj.$or[key]];
+    });
   }
 
   // $or: or (either)
@@ -20,18 +28,19 @@ export default class Or extends Base {
   }
 
   get where() {
-    return `(or ${this.clauses()})`;
+    console.log('clauses', this.clauses);
+    return `(or ${this.clauses.join(' ')})`;
   }
 
-  clauses() {
-    this.list.reduce((prev, next) => {
-      prev.push(this.clause(next));
-      return prev;
+  get clauses() {
+    return this.list.reduce((prev, next) => {
+      return prev.concat(this.clause(next));
     }, []);
   }
 
   clause(obj) {
-    new Builder(obj);
+    console.log('clause for', obj);
+    return new Builder(...obj).build();
   }
 }
 

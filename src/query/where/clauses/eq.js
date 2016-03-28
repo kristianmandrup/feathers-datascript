@@ -4,7 +4,7 @@ export default class Eq extends Base {
   // name: 'Alice'
   constructor(name, value) {
     super(name);
-    this.value = value;
+    this.value = (typeof value === 'object') ? value.eq : value;
   }
 
   build() {
@@ -22,6 +22,7 @@ export default class Eq extends Base {
       case 'string':
         return `'${this.value}'`;
       default:
+        console.log('val', this.value);
         return `${this.value}`;
     }
   }
