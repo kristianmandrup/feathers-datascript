@@ -56,6 +56,7 @@ export default class Builder {
     var clazz = this.type;
     var obj = {[this.name]: this.predicate};
     var inst = clazz.create(obj, where);
+    inst.options = this.options;
 
     return inst.where;
   }

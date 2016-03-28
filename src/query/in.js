@@ -5,6 +5,8 @@ export default class In {
   // {name: 'alice'}
   // in - {name: {$in: ['alice', 'wonder']}}
   // not in - {name: {$nin: ['alice', 'wonder']}}
+
+  // TODO: exclude attribute names if mode: inline
   constructor(params) {
     if (typeof params === 'object') {
       params = toTupleObjList(params);

@@ -4,8 +4,15 @@ export default class Eq extends Base {
   // name: 'Alice'
   constructor(name, value, where) {
     super(name);
-    this.value = (typeof value === 'object') ? value.eq : value;
+    this.value = value;
+    if (typeof value === 'object') {
+      this.value = value.eq;
+    }
     this._where = where;
+  }
+
+  get mode() {
+    return this.options ? this.options.mode : null;
   }
 
   build() {
@@ -19,7 +26,7 @@ export default class Eq extends Base {
   }
 
   get clause() {
-    return `?e ?${this.name} ${this._nameVal}`;
+    return `?e ${this.attributeName} ${this._nameVal}`;
   }
 
   get _nameVal() {
@@ -41,9 +48,9 @@ export default class Eq extends Base {
 Eq.create = (name, value, where) => {
   if (typeof name === 'object') {
     var key = Object.keys(name)[0];
+    where = value;
     value = name[key];
     name = key;
-    where = value;
   }
   return new Eq(name, value, where);
 };

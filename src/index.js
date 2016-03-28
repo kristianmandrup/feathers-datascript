@@ -70,10 +70,12 @@ export default class PersonService {
     if (!params.query) {
       throw 'params missing :query option';
     }
-    var res = this.queryBuilder.query(params.query);
+    // default options: inline attribute names
+    // TODO: fix in to include/exclude attribute names dep. on mode
+    var res = this.queryBuilder.query(params.query, {});
 
     // pass attribute names, and values as params to query
-    var qParams = _.zip(res.params.names, res.params.values);
+    var qParams = res.params.values;
 
     return this._q(res.query, qParams).then(result => {
       return this._resultFor(result);

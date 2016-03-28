@@ -2,7 +2,8 @@ import { toTupleList } from '../../util';
 import Builder from './builder';
 
 export default class Where {
-  constructor(params) {
+  constructor(params, options) {
+    this.options = options;
     if (typeof params === 'object') {
       params = toTupleList(params);
     }
@@ -30,7 +31,9 @@ export default class Where {
 
   build() {
     return this.params.map(param => {
-      return Builder.create(...param).build(this);
+      var builder = Builder.create(...param);
+      builder.options = this.options;
+      return builder.build(this);
     });
   }
 }
