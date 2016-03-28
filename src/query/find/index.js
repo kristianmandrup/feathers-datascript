@@ -15,11 +15,15 @@
 //  [?p :entity/person ?type]
 //  [?p ?attr ?a]
 
+import util from '../../util';
 import Only from './only';
 import Selector from './selector';
 
 export default class Find {
   constructor(params) {
+    if (typeof params === 'object') {
+      params = util.toArray(params);
+    }
     this.params = params;
     this.selector = new Selector(this.params);
   }

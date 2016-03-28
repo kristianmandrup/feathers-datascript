@@ -1,4 +1,4 @@
-export default function toArray(obj) {
+export function toArray(obj) {
   if (obj.length) {
     return obj; // already an array
   }
@@ -7,4 +7,10 @@ export default function toArray(obj) {
     return prev.concat([key, obj[key]]);
   }, []);
   return arr;
+}
+
+export function toTupleList(obj) {
+  return Object.keys(obj).map(key => {
+    return [key, obj[key]];
+  });
 }

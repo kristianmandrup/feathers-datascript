@@ -1,4 +1,3 @@
-import util from 'util';
 import BaseAdapter from './base';
 import { Datomic } from 'datomic';
 
@@ -27,7 +26,7 @@ export default class DatomicAdapter extends BaseAdapter {
     });
   }
 
-  addListeners() {    
+  addListeners() {
   }
 
   createRemoteConn() {

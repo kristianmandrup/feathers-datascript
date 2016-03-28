@@ -1,4 +1,4 @@
-import util from './util';
+import { toArray } from '../util';
 
 export default class BaseAdapter {
   constructor(options = {}) {
@@ -45,7 +45,7 @@ export default class BaseAdapter {
     if (!statement.length) {
       statement = [statement];
       statement = statement.map(transaction => {
-        return util.toArray(transaction);
+        return toArray(transaction);
       });
     }
     this._log('transact', statement);

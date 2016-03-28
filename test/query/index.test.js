@@ -20,11 +20,15 @@ describe('Query', () => {
       name: 'kris',
       age: {$gt: 32}
     });
-    expect(query.build()).to.equal({
-      ':find': '?name-value ?age-value',
-      ':in': '$ ?name ?age',
-      ':where': '[?e ?name ?name-value] [?e ?age ?age-value]'
-    });
+
+    // ':find': '?name-value ?age-value',
+    // ':in': '$ ?name ?age',
+    let q = query.build()[':where'];
+
+    expect(q).to.equal([
+        '[?e ?name ?name-value]',
+        '[?e ?age ?age-value]'
+    ]);
     done();
   });
 });

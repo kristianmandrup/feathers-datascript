@@ -1,9 +1,14 @@
+import util from '../util';
+
 export default class In {
   // 'name', 'age'
   // {name: 'alice'}
   // in - {name: {$in: ['alice', 'wonder']}}
   // not in - {name: {$nin: ['alice', 'wonder']}}
   constructor(params) {
+    if (typeof params === 'object') {
+      params = util.toArray(params);
+    }
     this.params = params;
   }
 

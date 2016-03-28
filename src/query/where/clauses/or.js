@@ -1,3 +1,4 @@
+import { toTupleList } from '../../../util';
 import Base from './base';
 import Builder from '../builder';
 
@@ -9,10 +10,7 @@ export default class Or extends Base {
       throw 'Or must be an object with an $or key';
     }
     // group each key/value into a list
-
-    this.list = Object.keys(obj.$or).map(key => {
-      return [key, obj.$or[key]];
-    });
+    this.list = toTupleList(obj.$or);
   }
 
   // $or: or (either)

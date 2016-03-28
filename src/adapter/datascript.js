@@ -1,4 +1,3 @@
-import util from 'util';
 import BaseAdapter from './base';
 import datascript from 'datascript';
 
