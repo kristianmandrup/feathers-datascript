@@ -156,7 +156,6 @@ export default class PersonService {
   // the removed resource. id can also be null indicating to delete
   // multiple resources.
   remove(id) {
-    // console.log('remove', id);
     if (isNaN(id)) {
       throw 'remove requires a numeric id';
     }

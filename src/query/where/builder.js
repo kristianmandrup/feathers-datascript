@@ -3,7 +3,6 @@ import { predicateMap } from './clauses/predicate';
 
 export default class Builder {
   constructor(name, predicate) {
-    // console.log('build', name, predicate);
     if (typeof name === 'object') {
       var key = Object.keys(name)[0];
       predicate = name[key];
@@ -16,7 +15,6 @@ export default class Builder {
     this.name = name;
     this.predicate = predicate;
     this.pred = this._extract(predicate);
-    // console.log('pred', this.name, this.pred);
   }
 
   _extract(predicate) {

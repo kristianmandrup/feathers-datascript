@@ -7,11 +7,11 @@ export default class In {
   // not in - {name: {$nin: ['alice', 'wonder']}}
 
   // TODO: exclude attribute names if mode: inline
-  constructor(params) {
-    if (typeof params === 'object') {
+  constructor(params, options) {
+    this.options = options || {};
+    if (!Array.isArray(params)) {
       params = toTupleObjList(params);
     }
-    // console.log('params', params);
     this.params = params;
   }
 
@@ -19,13 +19,30 @@ export default class In {
     if (!this.params || this.params.length === 0) {
       return {};
     }
-    return `${this.clause}`;
+    // TODO: depends on mode in options
+    return `${this._params}`;
   }
 
-  get clause() {
+  get _params() {
+    return (this.options.mode === 'inline') ? this._paramValues : this._all;
+  }
+
+  // TODO: depends on mode in options
+  get _paramValues() {
     return this.params.map(param => {
       return this._value(param);
     }).join(' ');
+  }
+
+  get _all() {
+    return this.params.map(param => {
+      var val = [`?${this._paramName(param)}`, this._value(param)].join(' ');
+      return val;
+    }).join(' ');
+  }
+
+  _paramName(param) {
+    return (typeof param === 'object') ? Object.keys(param)[0] : param;
   }
 
   _value(param) {

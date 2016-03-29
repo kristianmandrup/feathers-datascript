@@ -25,7 +25,6 @@ describe('Find', () => {
 
   it('email only', done => {
     let find = new Find({$select: {email: 1}});
-    console.log('email only', find);
     expect(find).to.be.an.instanceof(Find);
     expect(find.selector).to.be.an.instanceof(Selector);
     expect(find.build()).to.eq({find: ''});
@@ -34,7 +33,6 @@ describe('Find', () => {
 
   it('all except email', done => {
     let find = new Find({$select: {email: -1}});
-    console.log('except email', find);
     expect(find).to.be.an.instanceof(Find);
     expect(find.selector).to.be.an.instanceof(Selector);
     expect(find.build()).to.eq({find: ''});

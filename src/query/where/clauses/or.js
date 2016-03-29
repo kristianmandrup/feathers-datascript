@@ -27,7 +27,6 @@ export default class Or extends Base {
   }
 
   get where() {
-    // console.log('clauses', this.clauses);
     return `(or ${this.clauses.join(' ')})`;
   }
 

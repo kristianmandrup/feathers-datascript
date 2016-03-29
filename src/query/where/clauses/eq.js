@@ -38,7 +38,6 @@ export default class Eq extends Base {
       case 'string':
         return `'${this.value}'`;
       default:
-        // console.log('val', this.value);
         return `${this.value}`;
     }
   }

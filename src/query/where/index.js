@@ -7,7 +7,6 @@ export default class Where {
     if (typeof params === 'object') {
       params = toTupleList(params);
     }
-    // console.log('where params', params);
     this.params = params;
     this.values = [];
     this.names = [];

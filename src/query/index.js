@@ -48,7 +48,7 @@ export default class Query {
   }
 
   get ins() {
-    return new In(this.q).build();
+    return new In(this.q, this.queryOptions).build();
   }
 
   get where() {

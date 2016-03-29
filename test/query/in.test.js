@@ -22,22 +22,27 @@ describe('In', () => {
     done();
   });
 
-  it('in email, name', done => {
-    let ins = new In(['name', 'email']);
+  it('mode: pass', done => {
+    let ins = new In(['name', 'email'], {mode: 'pass'});
     expect(ins).to.be.an.instanceof(In);
-    expect(ins.build()).to.eql({
-      ':in': `?name ?email`
-    });
+    expect(ins.build()).to.eql(
+      '?name ?name-value ?email ?email-value'
+    );
+    done();
+  });
+
+  it('mode: inline', done => {
+    let ins = new In(['name', 'email'], {mode: 'inline'});
+    expect(ins).to.be.an.instanceof(In);
+    expect(ins.build()).to.eql('?name-value ?email-value');
     done();
   });
 
   it('in status list, name', done => {
     let status = {status: {$in: ['single', 'divorced']}};
-    let ins = new In([status, 'name']);
+    let ins = new In([status, 'name'], {mode: 'inline'});
     expect(ins).to.be.an.instanceof(In);
-    expect(ins.build()).to.eql({
-      ':in': `[?status ...] ?name`
-    });
+    expect(ins.build()).to.eql('[?status-value ...] ?name-value');
     done();
   });
 });
