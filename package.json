@@ -36,7 +36,7 @@
     "compile": "rm -rf lib/ && babel -d lib/ src/",
     "watch": "babel --watch -d lib/ src/",
     "jshint": "jshint src/. test/. --config",
-    "mocha": "mocha test/query_builder.test.js --compilers js:babel-core/register",
+    "mocha": "mocha test/service.test.js --compilers js:babel-core/register",
     "test": "npm run jshint && npm run mocha"
   },
   "directories": {
@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "datascript": "^0.15.0",
+    "dqb": "kristianmandrup/datascript-query-builder",
     "datomic": "kristianmandrup/datomicjs",
     "jsedn": "kristianmandrup/jsedn",
     "debug": "^2.2.0",
