@@ -8,11 +8,9 @@ function createAdapter(options) {
   return new DataScriptAdapter(options);
 }
 
-const findMaxId = `[:find ?id :where [?e ":person/id" ?id]]`;
-
 // Create the service.
-// TODO: use ES6 class instead!
 export default class PersonService {
+  // {log: true} to enable logging
   constructor(name, options = {}){
     if(!name){
       throw new SyntaxError('You must pass a String as the name of the entity');
@@ -31,11 +29,19 @@ export default class PersonService {
     // TODO: handle failed connections.
     this.adapter = this.adapter || this.createAdapter(options);
     this.type = this.adapter.name;
-    this.queryBuilder = new QueryBuilder(this.entityName);
+    this.queryBuilder = new QueryBuilder(this.entityClass);
+  }
+
+  get findMaxId() {
+    return `[:find ?id :where [?e ":${this.entityName}/id" ?id]]`;
+  }
+
+  get entityClass() {
+    return this.constructor.name.replace(/Service$/, '');
   }
 
   get entityName() {
-    return this.constructor.name.replace(/Service$/, '');
+    return this.entityClass.toLowerCase();
   }
 
   get db() {
@@ -47,7 +53,9 @@ export default class PersonService {
   }
 
   _log(...args) {
-    console.log('Service', ...args);
+    if (this.options.log) {
+      console.log('Service', ...args);
+    }
   }
 
   _q(query, qParams) {
@@ -85,7 +93,7 @@ export default class PersonService {
   // retrieves a single resource with the given id from the service.
   get(id, params) {
     params.$id = id;
-    var query = this.queryBuilder.byId('person', {id: id});
+    var query = this.queryBuilder.byId(this.entityName, {id: id});
 
     // what do params do here?
     return this._q(query).then(result => {
@@ -94,7 +102,7 @@ export default class PersonService {
   }
 
   get id() {
-    return ':person/id';
+    return `:${this.entityName}/id`;
   }
 
   addEntity(data) {
@@ -113,7 +121,7 @@ export default class PersonService {
   // The method should return a Promise with the newly created data.
   // data may also be an array which creates and returns a list of resources.
   create(data) {
-    this._q(findMaxId).then(queryRes => {
+    this._q(this.findMaxId).then(queryRes => {
       var nextId = queryRes.length ? queryRes[0] + 1 : 0;
       var transactData = _.merge({[this.id]: nextId}, data);
       var statement = this.addEntity(transactData);

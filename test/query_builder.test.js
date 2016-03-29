@@ -59,7 +59,7 @@ describe('Query', () => {
 
     let expected = {
       ':find': `?name-value ?age-value`,
-      ':in': `?name-value ?age-value`,
+      ':in': `?name ?name-value ?age ?age-value`,
       ':where': whereClauses
     };
     expect(q).to.eql(expected);
