@@ -9,7 +9,7 @@ function createAdapter(options) {
 }
 
 // Create the service.
-export default class PersonService {
+export default class Service {
   // {log: true} to enable logging
   constructor(name, options = {}){
     if(!name){
@@ -86,7 +86,40 @@ export default class PersonService {
     var qParams = res.params.values;
 
     return this._q(res.query, qParams).then(result => {
-      return this._resultFor(result);
+      let filteredResult = this._filterResult(result);
+      let enrichedResult = this._enrichResult(filteredResult, res.params.names);
+      return this._resultFor(enrichedResult);
+    });
+  }
+
+  // q returns simple data array: We should convert into JSON
+  // with every value keyed by attribute
+  // [['kris' 32]] => [{name: 'kris', age: 32}
+  _enrichResult(result, attributes) {
+    return result.map(item => {
+      return item.map((value, index) => {
+        var key = attributes[index];
+        return {[key]: value};
+      });
+    });
+  }
+
+  // http://docs.feathersjs.com/databases/pagination.html
+  //  $limit: number
+  //  $skip: number
+  //  $sort: { name: 1 }
+  _filterResult(result, params) {
+    var {$limit, $skip} = params;
+    var sliced = result.slice($skip || 0);
+    var paged = result.slice($limit || 0);
+    return this._sort(paged, params.$sort);
+  }
+
+  _sort(result, params) {
+    var key = Object.keys(params)[0];
+    var direction = params[key];
+    return result.sort((a, b) => {
+      return direction === 1 ? a[key] > b[key] : a[key] < b[key];
     });
   }
 
