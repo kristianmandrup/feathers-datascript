@@ -1,7 +1,6 @@
 // import filter from 'feathers-query-filters';
-import QueryBuilder from './query_builder';
+import { QueryBuilder, Result } from 'dqb';
 import { DataScriptAdapter } from './adapter';
-import Result from './result';
 // import { types as errors } from 'feathers-errors';
 import _ from 'lodash';
 
