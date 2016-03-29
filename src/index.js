@@ -1,6 +1,7 @@
 // import filter from 'feathers-query-filters';
 import QueryBuilder from './query_builder';
 import { DataScriptAdapter } from './adapter';
+import Result from './result';
 // import { types as errors } from 'feathers-errors';
 import _ from 'lodash';
 
@@ -86,42 +87,12 @@ export default class Service {
     var qParams = res.params.values;
 
     return this._q(res.query, qParams).then(result => {
-      let filteredResult = this._filterResult(result);
-      let enrichedResult = this._enrichResult(filteredResult, res.params.names);
+      var enrichedResult = new Result(result).build();
       return this._resultFor(enrichedResult);
     });
   }
 
-  // q returns simple data array: We should convert into JSON
-  // with every value keyed by attribute
-  // [['kris' 32]] => [{name: 'kris', age: 32}
-  _enrichResult(result, attributes) {
-    return result.map(item => {
-      return item.map((value, index) => {
-        var key = attributes[index];
-        return {[key]: value};
-      });
-    });
-  }
 
-  // http://docs.feathersjs.com/databases/pagination.html
-  //  $limit: number
-  //  $skip: number
-  //  $sort: { name: 1 }
-  _filterResult(result, params) {
-    var {$limit, $skip} = params;
-    var sliced = result.slice($skip || 0);
-    var paged = result.slice($limit || 0);
-    return this._sort(paged, params.$sort);
-  }
-
-  _sort(result, params) {
-    var key = Object.keys(params)[0];
-    var direction = params[key];
-    return result.sort((a, b) => {
-      return direction === 1 ? a[key] > b[key] : a[key] < b[key];
-    });
-  }
 
   // retrieves a single resource with the given id from the service.
   get(id, params) {
