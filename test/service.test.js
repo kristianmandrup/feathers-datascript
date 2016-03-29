@@ -16,66 +16,37 @@ describe('Service', () => {
   });
   let service = new Service('person');
 
-  it('find: builds query', done => {
+  it('finds people named kris, aged 32', done => {
 
     let result = service.find({
       name: 'kris',
       age: {$gt: 32}
     });
 
-    let q = result.query;
-    let params = result.params;
-
-    let whereClauses = [
-        '[?e :person/name ?name-value]',
-        '[(> ?e :person/age ?age-value)]'
-    ];
-
-    let expected = {
-      ':find': `?name-value ?age-value`,
-      ':in': `?name-value ?age-value`,
-      ':where': whereClauses
-    };
-    expect(q).to.eql(expected);
-    expect(params.values).to.eql(['kris', 32]);
-    expect(params.names).to.eql(['name', 'age']);
+    expect(result).to.eql([
+      {name: 'kris', age: 41},
+    ]);
     done();
   });
 
-  it(':pass attribute names mode', done => {
+  it('find people named kris older than 32', done => {
     service = new Service('person', {mode: 'inline'});
     let result = service.find({
       name: 'kris',
       age: {$gt: 32}
     }, {mode: 'pass'});
 
-    let q = result.query;
-    let params = result.params;
-
-    let whereClauses = [
-        '[?e ?name ?name-value]',
-        '[(> ?e ?age ?age-value)]'
-    ];
-
-    let expected = {
-      ':find': `?name-value ?age-value`,
-      ':in': `?name ?name-value ?age ?age-value`,
-      ':where': whereClauses
-    };
-    expect(q).to.eql(expected);
-    expect(params.values).to.eql(['kris', 32]);
-    expect(params.names).to.eql(['name', 'age']);
+    expect(result).to.eql([
+      {name: 'kris', age: 41},
+    ]);
     done();
   });
 
-
-  it('get: pulls entity by Id', done => {
-    let q = service.get(27);
-
-    expect(q).to.eql({
-      pattern: ['*'],
-      entities: [{':person/id': 27}]
-    });
+  it('pulls person entity with id: 27', done => {
+    let result = service.get(27);
+    expect(result).to.eql([
+      {name: 'janice', age: 25},
+    ]);
     done();
   });
 });
