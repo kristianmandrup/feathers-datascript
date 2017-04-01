@@ -1,4 +1,6 @@
 # feathers-datascript
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/kristianmandrup/feathers-datascript.svg)](https://greenkeeper.io/)
 A [datascript](https://www.npmjs.com/package/datascript) and  [datomic](http://docs.datomic.com/architecture.html) service for FeathersJS.
 
 See [clj-crud](https://github.com/thegeez/clj-crud) for more inspiration.
